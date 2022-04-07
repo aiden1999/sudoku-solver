@@ -9,26 +9,38 @@ class KillerSudokuCageDef(tk.Toplevel):
 
         self.ks_count = 0  # Number of cells that are currently in the current cage
 
-        grid_frame = tk.Frame(self)  # Frame that contains inner_grid_frames
+        grid_frame = tk.Frame(self)  # Frame that contains block_frames
         instructions_1_label = tk.Label(self, font=20, text="Select adjacent cells to form one cage")
         instructions_1_label.pack(pady=10, padx=10)
 
         # Creating smaller frames to contain buttons
         self.grid_buttons = []
-        inner_grid_frames = []  # Frames that each contain one button
+        cell_frames = []  # Frames that each contain one button
         for i in range(81):  # Put buttons into frames
-            inner_grid_frames.append(tk.Frame(grid_frame, height=50, width=50))
-            inner_grid_frames[i].pack_propagate(0)
-            self.grid_buttons.append(tk.Button(inner_grid_frames[i], width=10, height=10, bg="white",
+            cell_frames.append(tk.Frame(grid_frame, height=50, width=50))
+            cell_frames[i].pack_propagate(0)
+            self.grid_buttons.append(tk.Button(cell_frames[i], width=10, height=10, bg="white",
                                                command=lambda x=i: self.grid_button_clicked(x)))
             self.grid_buttons[i].pack(fill="both", expand=1)
 
-        # Arranging the smaller frames into the larger frame
+        # Arranging the cell frames into block frames
         for j in range(9):
             for i in range(9):
-                inner_grid_frames[i + (j * 9)].grid(row=j, column=i)
+                i_diff = i // 3
+                j_diff = j // 3
+                cell_frames[i + (j * 9)].grid(row=(j + j_diff), column=(i + i_diff))
+        # Add space between blocks
+        for i in range(18, 27):
+            cell_frames[i].grid(pady=(0, 15))
+        for i in range(45, 54):
+            cell_frames[i].grid(pady=(0, 15))
+        for i in range(81):
+            if i % 9 == 2:
+                cell_frames[i].grid(padx=(0, 15))
+            if i % 9 == 5:
+                cell_frames[i].grid(padx=(0, 15))
 
-        # Placing the larger frame onto the window
+        # Placing the grid frame onto the window
         grid_frame.pack(padx=10, pady=10)
 
         # Button for when the user has finished defining which cells make up one cage
