@@ -1,4 +1,5 @@
 import tkinter as tk
+import math
 
 
 class SolveClear:
@@ -55,25 +56,52 @@ class ChooseCellsWindow(tk.Toplevel):
         self.instructions_label.pack(pady=10, padx=10)
 
         self.grid_frame = tk.Frame(self)  # Frame that contains the grid of buttons
-        self.inner_grid_frames = []  # Frames that each contain an individual button
+        self.cell_frames = []  # Frames that each contain an individual button
         self.grid_buttons = []  # List of buttons
 
         # Create inner_grid_frames, grid_buttons, display_answers
         for i in range(grid_dim ** 2):
             if self.grid_dim > 9:
-                self.inner_grid_frames.append(tk.Frame(self.grid_frame, height=30, width=30))
+                self.cell_frames.append(tk.Frame(self.grid_frame, height=30, width=30))
             else:
-                self.inner_grid_frames.append(tk.Frame(self.grid_frame, height=50, width=50))
-            self.inner_grid_frames[i].pack_propagate(0)
-            self.grid_buttons.append(tk.Button(self.inner_grid_frames[i], width=10, height=10, bg="white",
+                self.cell_frames.append(tk.Frame(self.grid_frame, height=50, width=50))
+            self.cell_frames[i].pack_propagate(0)
+            self.grid_buttons.append(tk.Button(self.cell_frames[i], width=10, height=10, bg="white",
                                                command=lambda x=i: self.grid_button_clicked(x)))
             self.grid_buttons[i].pack(fill="both", expand=1)
             self.display_answer.append(False)
 
-        # Display inner_grid_frames
-        for j in range(grid_dim):
-            for i in range(grid_dim):
-                self.inner_grid_frames[i + (j * grid_dim)].grid(row=j, column=i)
+        # Display cell_frames, arranging into blocks
+        if self.grid_dim == 6:
+            for j in range(6):
+                for i in range(6):
+                    i_diff = i // 2
+                    j_diff = j // 3
+                    self.cell_frames[i + (j * 6)].grid(row=(j + j_diff), column=(i + i_diff))
+            # Add space between blocks
+            for i in range(6, 12):
+                self.cell_frames[i].grid(pady=(0, 15))
+            for i in range(18, 24):
+                self.cell_frames[i].grid(pady=(0, 15))
+            for i in range(36):
+                if i % 6 == 2:
+                    self.cell_frames[i].grid(padx=(0, 15))
+        else:
+            gd_sqrt = int(math.sqrt(self.grid_dim))
+            for j in range(self.grid_dim):
+                for i in range(self.grid_dim):
+                    i_diff = i // gd_sqrt
+                    j_diff = j // gd_sqrt
+                    self.cell_frames[i + (j * self.grid_dim)].grid(row=(j + j_diff), column=(i + i_diff))
+            # Horizontal space
+            for j in range(1, gd_sqrt):
+                for i in range((self.grid_dim * ((j * gd_sqrt) - 1)), self.grid_dim * (j * gd_sqrt)):
+                    self.cell_frames[i].grid(pady=(0, 15))
+            # Vertical space
+            for j in range(1, gd_sqrt):
+                for i in range(grid_dim ** 2):
+                    if i % grid_dim == (gd_sqrt * j) - 1:
+                        self.cell_frames[i].grid(padx=(0, 15))
 
         self.grid_frame.pack(padx=10, pady=10)
         self.done_button = tk.Button(self, font=20, text="Done", command=self.done_button_clicked)
