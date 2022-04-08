@@ -8,7 +8,7 @@ def define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals):
     if sudoku_type == "killer_sudoku":
         define_killer_sudoku_clauses(puzzle, sat_solver, cages, totals)
     if sudoku_type == "hyper_sudoku":
-        define_hyper_sudoku_clauses()
+        define_hyper_sudoku_clauses(puzzle, sat_solver)
 
 
 def define_standard_clauses(puzzle, sat_solver, grid_dim):
@@ -61,11 +61,11 @@ def blocks_rule(sat_solver, start_col, start_row, grid_dim):
                                 sat_solver.add_clause(two_neg_clauses(n, c, r, n, c_prime, r_prime, grid_dim))
     else:
         sr_dim = int(math.sqrt(grid_dim))
-        for n in range(1, grid_dim + 1):  # Dependent on grid size
-            for r in range(start_row, start_row + sr_dim):  # Dependent on grid size
-                for c in range(start_col, start_col + sr_dim):  # Dependent on grid size
-                    for r_prime in range(start_row, start_row + sr_dim):  # Dependent on grid size
-                        for c_prime in range(start_col, start_col + sr_dim):  # Dependent on grid size
+        for n in range(1, grid_dim + 1):
+            for r in range(start_row, start_row + sr_dim):
+                for c in range(start_col, start_col + sr_dim):
+                    for r_prime in range(start_row, start_row + sr_dim):
+                        for c_prime in range(start_col, start_col + sr_dim):
                             if col_row_mod(c, r, grid_dim) < col_row_mod(c_prime, r_prime, grid_dim):
                                 sat_solver.add_clause(two_neg_clauses(n, c, r, n, c_prime, r_prime, grid_dim))
 
@@ -187,4 +187,12 @@ def define_killer_sudoku_clauses(puzzle, sat_solver, cages, totals):
         sat_solver.add_clause(all_x_var)
         x_var = x_var + 1
     # Standard sudoku rules (including numbers already in puzzle)
+    define_standard_clauses(puzzle, sat_solver, 9)
+
+
+def define_hyper_sudoku_clauses(puzzle, sat_solver):
+    blocks_rule(sat_solver, 1, 1, 9)  # Top left
+    blocks_rule(sat_solver, 1, 5, 9)  # Bottom left
+    blocks_rule(sat_solver, 5, 1, 9)  # Top right
+    blocks_rule(sat_solver, 5, 5, 9)  # Bottom right
     define_standard_clauses(puzzle, sat_solver, 9)
