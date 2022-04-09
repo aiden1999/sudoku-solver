@@ -1,6 +1,10 @@
 import tkinter as tk
 import random
+from tkinter import messagebox
 import misc_funcs
+
+# Things that need to be checked:
+# - Maximum total dependent on cage size
 
 
 class KillerSudokuCageDef(tk.Toplevel):
@@ -61,8 +65,19 @@ class KillerSudokuCageDef(tk.Toplevel):
     def grid_button_clicked(self, i):
         # Button in grid clicked
         self.ks_count = ks_grid_button_clicked(i, self.grid_buttons, self.ks_count)
+        if self.ks_count == 9:  # Warn the user that they have reached the maximum cage size
+            for j in range(81):
+                if self.grid_buttons[j]["bg"] == "white":
+                    self.grid_buttons[j]["state"] = "disabled"
+            messagebox.showwarning("Warning", "You have reached the maximum cage size")
+            self.cage_done_button["state"] = "normal"
+        elif self.ks_count == 8:  # Enables the grid buttons if the user went down from 9 to 8
+            for j in range(81):
+                if self.grid_buttons[j]["bg"] == "white":
+                    self.grid_buttons[j]["state"] = "normal"
+            self.cage_done_button["state"] = "normal"
         # Can only click done button if at least one cell has been selected (at least one button clicked)
-        if self.ks_count > 0:
+        elif self.ks_count > 0:
             self.cage_done_button["state"] = "normal"
         else:
             self.cage_done_button["state"] = "disabled"
@@ -92,24 +107,32 @@ def ks_grid_button_clicked(i, grid_buttons, ks_count):
 
 def ks_total_clicked(grid_buttons, ks_cages, total_text, ks_totals):
     # User has entered the total and is therefore finished with defining the cage
-    cage = []
-    chosen_button_count = 0  # Buttons that have been clicked overall, i.e. the number of cells that belong to a cage
+    cage_size = 0
     for i in range(81):
-        if grid_buttons[i]["bg"] == "blue":  # Button has been selected
-            cage.append(i)  # Add its location to the current cage
-            grid_buttons[i]["state"] = "disabled"
-            grid_buttons[i]["bg"] = "dark grey"
-        if grid_buttons[i]["bg"] == "dark grey":  # All buttons whose corresponding cell belongs to a cage
-            chosen_button_count = chosen_button_count + 1
-        else:
-            grid_buttons[i]["state"] = "normal"
-    ks_cages.append(cage)
+        if grid_buttons[i]["bg"] == "blue":
+            cage_size = cage_size + 1
     total = int(total_text.get("1.0", 'end - 1c'))
-    ks_totals.append(total)
-    if chosen_button_count == 81:  # All cells are in a cage
-        return True
+    if total > cage_max_total(cage_size):
+        messagebox.showerror("Error", "The total for this cage is too large")
+        return False, False
     else:
-        return False
+        cage = []
+        chosen_button_count = 0  # Buttons that have been clicked overall, i.e. the no. of cells that belong to a cage
+        for i in range(81):
+            if grid_buttons[i]["bg"] == "blue":  # Button has been selected
+                cage.append(i)  # Add its location to the current cage
+                grid_buttons[i]["state"] = "disabled"
+                grid_buttons[i]["bg"] = "dark grey"
+            if grid_buttons[i]["bg"] == "dark grey":  # All buttons whose corresponding cell belongs to a cage
+                chosen_button_count = chosen_button_count + 1
+            else:
+                grid_buttons[i]["state"] = "normal"
+        ks_cages.append(cage)
+        ks_totals.append(total)
+        if chosen_button_count == 81:  # All cells are in a cage
+            return True, True
+        else:
+            return False, True
 
 
 def generate_ks_colours(cages):
@@ -183,3 +206,10 @@ def generate_ks_colours(cages):
         for cell in cage:
             chosen_colours[cell] = colour_choice
     return chosen_colours
+
+
+def cage_max_total(cage_size):
+    max_total = 0
+    for i in range(cage_size):
+        max_total = max_total + (9 - i)
+    return max_total

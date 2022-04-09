@@ -73,8 +73,9 @@ class App(tk.Tk):  # Main app class
 
     def ks_done_button_clicked(self):
         # Button for where the user has finished typing a cage's total has been clicked
-        all_selected = ks_cages_setup.ks_total_clicked(self.killer_sudoku_cage_def.grid_buttons, self.ks_cages,
-                                                       self.killer_sudoku_cage_def.total_text, self.ks_totals)
+        all_selected, valid_total = \
+            ks_cages_setup.ks_total_clicked(self.killer_sudoku_cage_def.grid_buttons,self.ks_cages,
+                                            self.killer_sudoku_cage_def.total_text, self.ks_totals)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
             puzzle_grid = puzzle_grids.KillerSudokuGrid(self, self.cell_texts, self.display_answer)
             puzzle_grid.grid(column=0, row=0)
@@ -83,10 +84,11 @@ class App(tk.Tk):  # Main app class
             self.killer_sudoku_cage_def.destroy()
             self.puzzle_config.grid_dim = 9
         else:  # Not every cell is in a cage, so 'reset' the adding total-related UI
-            self.killer_sudoku_cage_def.instructions_2_label["foreground"] = "grey"
-            self.killer_sudoku_cage_def.total_text.delete(1.0, "end")
-            self.killer_sudoku_cage_def.total_text["state"] = "disabled"
-            self.killer_sudoku_cage_def.add_total_button["state"] = "disabled"
+            if valid_total:
+                self.killer_sudoku_cage_def.instructions_2_label["foreground"] = "grey"
+                self.killer_sudoku_cage_def.total_text.delete(1.0, "end")
+                self.killer_sudoku_cage_def.total_text["state"] = "disabled"
+                self.killer_sudoku_cage_def.add_total_button["state"] = "disabled"
 
 
 class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting grid size for standard sudoku
