@@ -3,9 +3,6 @@ import random
 from tkinter import messagebox
 import misc_funcs
 
-# Things that need to be checked:
-# - Maximum total dependent on cage size
-
 
 class KillerSudokuCageDef(tk.Toplevel):
     def __init__(self, root):
