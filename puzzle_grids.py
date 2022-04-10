@@ -67,8 +67,7 @@ class KillerSudokuGrid(tk.Canvas):
         # Colouring cell backgrounds for different killer sudoku cages
         cell_colours = ks_cages_setup.generate_ks_colours(container.ks_cages)
         for i in range(81):
-            cell_row = misc_funcs.i_to_rc(i, 9)[0]
-            cell_column = misc_funcs.i_to_rc(i, 9)[1]
+            cell_row, cell_column = misc_funcs.i_to_rc(i, 9)
             row_1 = 25 + (cell_row * 50)
             row_2 = 75 + (cell_row * 50)
             col_1 = 25 + (cell_column * 50)
