@@ -118,6 +118,10 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
                                                   value="hyper_sudoku", variable=self.puzzle_type, font=20,
                                                   command=self.other_radiobutton_clicked)
         hyper_sudoku_radiobutton.grid(row=3, sticky="W")
+        greater_than_sudoku_radiobutton = tk.Radiobutton(puzzle_type_radiobutton_frame, text="Greater Than Sudoku",
+                                                         value="greater_than_sudoku", variable=self.puzzle_type,
+                                                         font=20, command=self.other_radiobutton_clicked)
+        greater_than_sudoku_radiobutton.grid(row=4, sticky="W")
         self.puzzle_type.set("sudoku")
 
         # Choosing the size of the grid
