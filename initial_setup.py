@@ -54,17 +54,17 @@ class App(tk.Tk):  # Main app class
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=0, row=1)
 
-    def cell_option_radiobutton_clicked(self):
-        # One of the misc options radio buttons is clicked
-        self.choose_cells_window = solve_options.ChooseCellsWindow(self.misc_solve_options.cell_option.get(),
-                                                                   self.cell_texts, self.display_answer,
-                                                                   self.puzzle_config.grid_dim)
-
     def solve_button_clicked(self):
         # Solve the sudoku puzzle
-        solve.solve_sudoku(self.cell_texts, self.misc_solve_options.cell_option.get(), self.display_answer,
-                           self.solve_clear.solve_button, self.solve_clear.clear_button, self.puzzle_config.grid_dim,
-                           self.puzzle_config.puzzle_type.get(), self.ks_cages, self.ks_totals)
+        if self.misc_solve_options.cell_option.get() == ("specific" or "check_progress"):
+            self.choose_cells_window = solve_options.ChooseCellsWindow(self.misc_solve_options.cell_option.get(),
+                                                                       self.cell_texts, self.display_answer,
+                                                                       self.puzzle_config.grid_dim, self)
+        else:
+            solve.solve_sudoku(self.cell_texts, self.misc_solve_options.cell_option.get(), self.display_answer,
+                               self.solve_clear.solve_button, self.solve_clear.clear_button,
+                               self.puzzle_config.grid_dim, self.puzzle_config.puzzle_type.get(), self.ks_cages,
+                               self.ks_totals)
 
     def clear_button_clicked(self):
         # Clear user-entered numbers on the sudoku grid
@@ -74,7 +74,7 @@ class App(tk.Tk):  # Main app class
     def ks_done_button_clicked(self):
         # Button for where the user has finished typing a cage's total has been clicked
         all_selected, valid_total = \
-            ks_cages_setup.ks_total_clicked(self.killer_sudoku_cage_def.grid_buttons,self.ks_cages,
+            ks_cages_setup.ks_total_clicked(self.killer_sudoku_cage_def.grid_buttons, self.ks_cages,
                                             self.killer_sudoku_cage_def.total_text, self.ks_totals)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
             puzzle_grid = puzzle_grids.KillerSudokuGrid(self, self.cell_texts, self.display_answer)

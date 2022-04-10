@@ -1,5 +1,6 @@
 import tkinter as tk
 import math
+import solve
 
 
 class SolveClear:
@@ -31,12 +32,10 @@ class MiscOptions:
                                             variable=self.cell_option, font=20)
         random_radiobutton.grid(row=2, sticky="W")
         specific_radiobutton = tk.Radiobutton(self.misc_options_frame, text="Specific cell(s)", value="specific",
-                                              variable=self.cell_option, font=20,
-                                              command=root.cell_option_radiobutton_clicked)
+                                              variable=self.cell_option, font=20)
         specific_radiobutton.grid(row=3, sticky="W")
         check_progress_radiobutton = tk.Radiobutton(self.misc_options_frame, text="Check progress",
-                                                    value="check_progress", variable=self.cell_option, font=20,
-                                                    command=root.cell_option_radiobutton_clicked)
+                                                    value="check_progress", variable=self.cell_option, font=20)
         check_progress_radiobutton.grid(row=4, sticky="W")
         self.cell_option.set("all")
 
@@ -44,13 +43,14 @@ class MiscOptions:
 class ChooseCellsWindow(tk.Toplevel):
     # Window to choose cell(s) to solve (specific), or to mark which cells were worked out by the user and which cells
     # are puzzle clues.
-    def __init__(self, option, cell_texts, display_answer, grid_dim):
+    def __init__(self, option, cell_texts, display_answer, grid_dim, root):
         super().__init__()
 
         self.option = option  # One of "all", "random", "specific", "check_progress"
         self.cell_texts = cell_texts  # Text boxes where values are entered onto the grid
         self.display_answer = display_answer  # List of bools, whether the answer of a cell will be displayed or not
         self.grid_dim = grid_dim  # Size of grid (one side)
+        self.root = root  # The container (i.e. app)
 
         self.instructions_label = tk.Message(self, font=20)
         self.instructions_label.pack(pady=10, padx=10)
@@ -133,6 +133,10 @@ class ChooseCellsWindow(tk.Toplevel):
         grid_button_clicked_func(self.option, self.grid_buttons, self.display_answer, i)
 
     def done_button_clicked(self):
+        solve.solve_sudoku(self.cell_texts, self.root.misc_solve_options.cell_option.get(), self.display_answer,
+                           self.root.solve_clear.solve_button, self.root.solve_clear.clear_button,
+                           self.root.puzzle_config.grid_dim, self.root.puzzle_config.puzzle_type.get(),
+                           self.root.ks_cages, self.root.ks_totals)
         # Close window once finished
         self.destroy()
 
