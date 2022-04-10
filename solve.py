@@ -143,8 +143,8 @@ def check_progress(puzzle, cell_texts, solve_button, clear_button, display_answe
             original_puzzle_solution = decode(sat_solver2, "check_progress", cell_texts, display_answer, grid_dim)
             incorrect_user_answers = []
             for i in range(grid_dim ** 2):
-                if str(original_puzzle_solution[i])\
-                        != puzzle[misc_funcs.i_to_rc(i, grid_dim)[0]][misc_funcs.i_to_rc(i, grid_dim)[1]]:
+                row, col = misc_funcs.i_to_rc(i, grid_dim)
+                if str(original_puzzle_solution[i]) != puzzle[row][col]:
                     # Compare user answers to solution
                     incorrect_user_answers.append(i)
             for i in range(len(incorrect_user_answers)):  # Highlight incorrect user answers
