@@ -46,13 +46,19 @@ class App(tk.Tk):  # Main app class
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
+        if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
+            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self, self.cell_texts, self.display_answer)
+            puzzle_grid.grid(column=0, row=0)
+            App.show_solve_options(self)
+            self.puzzle_config.options_frame.grid_remove()
+
     def show_solve_options(self):
         # Show options for which cells to solve, and solve/clear buttons
         self.misc_solve_options = solve_options.MiscOptions(self.options_frame, self)
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
         self.solve_clear = solve_options.SolveClear(self, self.options_frame)
         self.solve_clear.buttons_frame.grid(column=0, row=1)
-        self.options_frame.grid(column=0, row=1)
+        self.options_frame.grid(column=1, row=0, padx=(0, 20))
 
     def solve_button_clicked(self):
         # Solve the sudoku puzzle
