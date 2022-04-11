@@ -20,6 +20,8 @@ class App(tk.Tk):  # Main app class
         self.options_frame = tk.Frame()  # Frame containing options (random etc.) and solve/clear buttons
         self.ks_cages = []  # List of lists (cages) of ints (cells)
         self.ks_totals = []  # List of ints, ks_totals[n] corresponds to ks_cages[n]
+        self.gt_vertical_buttons = []  # Buttons on greater than sudoku grid
+        self.gt_horizontal_buttons = []  # Buttons on greater than sudoku grid
 
         self.title("Puzzle Solver")
         self.puzzle_config = PuzzleConfig(self)  # create window for choosing the type of puzzle
@@ -47,7 +49,8 @@ class App(tk.Tk):  # Main app class
             self.puzzle_config.options_frame.grid_remove()
 
         if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
-            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self, self.cell_texts, self.display_answer)
+            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self, self.cell_texts, self.display_answer,
+                                                             self.gt_horizontal_buttons, self.gt_vertical_buttons)
             puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
