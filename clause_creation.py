@@ -2,19 +2,24 @@ import math
 import misc_funcs
 
 
-def define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals, horizontal_greater, vertical_greater):
+def define_clauses(puzzle, sat_solver, root):
+
+    sudoku_type = root.puzzle_config.puzzle_type.get()
+    grid_dim = root.puzzle_config.grid_dim
+
     if sudoku_type == "sudoku":
         define_standard_clauses(puzzle, sat_solver, grid_dim)
     if sudoku_type == "killer_sudoku":
-        define_killer_sudoku_clauses(puzzle, sat_solver, cages, totals)
+        define_killer_sudoku_clauses(puzzle, sat_solver, root)
     if sudoku_type == "hyper_sudoku":
         define_hyper_sudoku_clauses(puzzle, sat_solver)
     if sudoku_type == "greater_than_sudoku":
-        define_greater_than_sudoku_clauses(puzzle, horizontal_greater, vertical_greater, sat_solver)
+        define_greater_than_sudoku_clauses(puzzle, sat_solver, root)
 
 
 def define_standard_clauses(puzzle, sat_solver, grid_dim):
     # Creates clauses for standard Sudoku rules
+
     # Clauses for known values in the puzzle
     for r in range(grid_dim):
         for c in range(grid_dim):
@@ -95,7 +100,11 @@ def col_row_mod(column, row, grid_dim):
         return (column % sr_dim) + sr_dim * (row % sr_dim)
 
 
-def define_killer_sudoku_clauses(puzzle, sat_solver, cages, totals):
+def define_killer_sudoku_clauses(puzzle, sat_solver, root):
+
+    cages = root.ks_cages
+    totals = root.ks_totals
+
     x_var = 730
     # Killer sudoku summation rules
     all_permutations = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -200,7 +209,11 @@ def define_hyper_sudoku_clauses(puzzle, sat_solver):
     define_standard_clauses(puzzle, sat_solver, 9)
 
 
-def define_greater_than_sudoku_clauses(puzzle, horizontal_greater, vertical_greater, sat_solver):
+def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
+
+    horizontal_greater = root.puzzle_grid.horizontal_greater
+    vertical_greater = root.puzzle_grid.vertical_greater
+
     for i in range(81):
         greater_than_count = 0
         if i in [0, 3, 6, 27, 30, 33, 54, 57, 60]:  # Top left corner

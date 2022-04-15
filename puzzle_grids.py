@@ -5,8 +5,12 @@ import misc_funcs
 
 
 class SudokuGrid(tk.Canvas):
-    def __init__(self, container, grid_size, cell_texts, display_answer):
+    def __init__(self, container, grid_size):
         super().__init__(container)
+
+        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
+        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+
         if grid_size == 25:
             cell_width = 36
         else:
@@ -41,27 +45,31 @@ class SudokuGrid(tk.Canvas):
         # Create cell_texts text boxes, which hold the user inputted values
         if grid_size == 25:
             for i in range(625):
-                cell_texts.append(tk.Text(self, height=1, width=2, font=("Arial", 12), relief="flat"))
-                display_answer.append(False)
+                self.cell_texts.append(tk.Text(self, height=1, width=2, font=("Arial", 12), relief="flat"))
+                self.display_answer.append(False)
         if grid_size == 16:
             for i in range(256):
-                cell_texts.append(tk.Text(self, height=1, width=2, font=("Arial", 19), relief="flat"))
-                display_answer.append(False)
+                self.cell_texts.append(tk.Text(self, height=1, width=2, font=("Arial", 19), relief="flat"))
+                self.display_answer.append(False)
         else:
             for i in range(grid_size ** 2):
-                cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
-                display_answer.append(False)
+                self.cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
+                self.display_answer.append(False)
         # Add containers to hold text boxes
         grid_windows = []
         for j in range(grid_size):
             for i in range(grid_size):
                 grid_windows.append(self.create_window(25 + ((i + 0.5) * cell_width), 25 + ((j + 0.5) * cell_width)))
-                self.itemconfigure(grid_windows[i + (j * grid_size)], window=cell_texts[i + (j * grid_size)])
+                self.itemconfigure(grid_windows[i + (j * grid_size)], window=self.cell_texts[i + (j * grid_size)])
 
 
 class KillerSudokuGrid(tk.Canvas):
-    def __init__(self, container, cell_texts, display_answer):
+    def __init__(self, container):
         super().__init__(container)
+
+        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
+        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+
         self["width"] = 500
         self["height"] = 500
         # Colouring cell backgrounds for different killer sudoku cages
@@ -89,9 +97,9 @@ class KillerSudokuGrid(tk.Canvas):
             light_lines.append(self.create_line(c1, i, c2, i, width=4))
         # Create cell_texts text boxes, which hold the user inputted values
         for i in range(81):
-            cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat",
-                                      background=cell_colours[i]))
-            display_answer.append(False)
+            self.cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat",
+                                           background=cell_colours[i]))
+            self.display_answer.append(False)
         # Add killer sudoku totals text boxes
         ks_totals_labels = []
         ks_totals_windows = []
@@ -108,12 +116,16 @@ class KillerSudokuGrid(tk.Canvas):
         for j in range(9):
             for i in range(9):
                 grid_windows.append(self.create_window(25 + ((i + 0.5) * 50), 25 + ((j + 0.5) * 50)))
-                self.itemconfigure(grid_windows[i + (j * 9)], window=cell_texts[i + (j * 9)])
+                self.itemconfigure(grid_windows[i + (j * 9)], window=self.cell_texts[i + (j * 9)])
 
 
 class HyperSudokuGrid(tk.Canvas):
-    def __init__(self, container, cell_texts, display_answer):
+    def __init__(self, container):
         super().__init__(container)
+
+        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
+        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+
         self["width"] = 500
         self["height"] = 500
         # Drawing the outline of the grid
@@ -137,34 +149,35 @@ class HyperSudokuGrid(tk.Canvas):
             light_lines.append(self.create_line(c1, i, c2, i, width=4))
         # Create cell_texts text boxes, which hold the user inputted values
         for i in range(81):
-            cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
-            display_answer.append(False)
+            self.cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
+            self.display_answer.append(False)
         # Changing text box background colours for hyper sudoku
         for i in range(10, 35, 9):
             for j in range(0, 37, 36):
-                cell_texts[i + j]["background"] = "light blue"
-                cell_texts[i + j + 1]["background"] = "light blue"
-                cell_texts[i + j + 2]["background"] = "light blue"
-                cell_texts[i + j + 4]["background"] = "light blue"
-                cell_texts[i + j + 5]["background"] = "light blue"
-                cell_texts[i + j + 6]["background"] = "light blue"
+                self.cell_texts[i + j]["background"] = "light blue"
+                self.cell_texts[i + j + 1]["background"] = "light blue"
+                self.cell_texts[i + j + 2]["background"] = "light blue"
+                self.cell_texts[i + j + 4]["background"] = "light blue"
+                self.cell_texts[i + j + 5]["background"] = "light blue"
+                self.cell_texts[i + j + 6]["background"] = "light blue"
         # Add containers to hold text boxes
         grid_windows = []
         for j in range(9):
             for i in range(9):
                 grid_windows.append(self.create_window(25 + ((i + 0.5) * 50), 25 + ((j + 0.5) * 50)))
-                self.itemconfigure(grid_windows[i + (j * 9)], window=cell_texts[i + (j * 9)])
+                self.itemconfigure(grid_windows[i + (j * 9)], window=self.cell_texts[i + (j * 9)])
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
-    def __init__(self, container, cell_texts, display_answer, horizontal_buttons, vertical_buttons, horizontal_greater,
-                 vertical_greater):
+    def __init__(self, container):
         super().__init__(container)
 
-        self.horizontal_buttons = horizontal_buttons
-        self.vertical_buttons = vertical_buttons
-        self.horizontal_greater = horizontal_greater
-        self.vertical_greater = vertical_greater
+        self.horizontal_buttons = []  # Buttons on greater than sudoku grid
+        self.vertical_buttons = []  # Buttons on greater than sudoku grid
+        self.horizontal_greater = []  # Stores 'left' or 'right', depending on which value is greater
+        self.vertical_greater = []  # Stores 'up' or 'down', depending on which value is greater
+        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
+        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
 
         for i in range(54):
             self.horizontal_greater.append("left")
@@ -188,14 +201,14 @@ class GreaterThanSudokuGrid(tk.Canvas):
             light_lines.append(self.create_line(c1, i, c2, i, width=4))
         # Create cell_texts text boxes, which hold user inputted values
         for i in range(81):
-            cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
-            display_answer.append(False)
+            self.cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
+            self.display_answer.append(False)
         # Add containers to hold text boxes
         grid_windows = []
         for j in range(9):
             for i in range(9):
                 grid_windows.append(self.create_window(25 + ((i + 0.5) * 50), 25 + ((j + 0.5) * 50)))
-                self.itemconfigure(grid_windows[i + (j * 9)], window=cell_texts[i + (j * 9)])
+                self.itemconfigure(grid_windows[i + (j * 9)], window=self.cell_texts[i + (j * 9)])
         # Create buttons to change greater than orientation
         # Horizontal buttons: > or <, vertical buttons: ^ or v
         for i in range(54):

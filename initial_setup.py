@@ -15,15 +15,9 @@ class App(tk.Tk):  # Main app class
         self.killer_sudoku_cage_def = None  # Window where the cages of a killer sudoku puzzle are defined
         self.choose_cells_window = None  # Window for choosing cells when using specific cell option or check progress
         self.solve_clear = None  # Frame containing solve and clear buttons
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
         self.options_frame = tk.Frame()  # Frame containing options (random etc.) and solve/clear buttons
         self.ks_cages = []  # List of lists (cages) of ints (cells)
         self.ks_totals = []  # List of ints, ks_totals[n] corresponds to ks_cages[n]
-        self.gt_vertical_buttons = []  # Buttons on greater than sudoku grid
-        self.gt_horizontal_buttons = []  # Buttons on greater than sudoku grid
-        self.horizontal_greater = []  # Stores 'left' or 'right', depending on which value is greater
-        self.vertical_greater = []  # Stores 'up' or 'down' depending on which value is greater
 
         self.title("Puzzle Solver")
         self.puzzle_config = PuzzleConfig(self)  # create window for choosing the type of puzzle
@@ -33,8 +27,7 @@ class App(tk.Tk):  # Main app class
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             current_size_txt = self.puzzle_config.grid_size_combobox.get()
             self.puzzle_config.grid_dim = misc_funcs.size_str_to_int(current_size_txt)
-            puzzle_grid = puzzle_grids.SudokuGrid(self, self.puzzle_config.grid_dim, self.cell_texts,
-                                                  self.display_answer)
+            puzzle_grid = puzzle_grids.SudokuGrid(self, self.puzzle_config.grid_dim)
             puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
@@ -45,16 +38,14 @@ class App(tk.Tk):  # Main app class
 
         if self.puzzle_config.puzzle_type.get() == "hyper_sudoku":
             self.puzzle_config.grid_dim = 9
-            puzzle_grid = puzzle_grids.HyperSudokuGrid(self, self.cell_texts, self.display_answer)
+            puzzle_grid = puzzle_grids.HyperSudokuGrid(self)
             puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
         if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
             self.puzzle_config.grid_dim = 9
-            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self, self.cell_texts, self.display_answer,
-                                                             self.gt_horizontal_buttons, self.gt_vertical_buttons,
-                                                             self.horizontal_greater, self.vertical_greater)
+            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self)
             puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
@@ -70,27 +61,19 @@ class App(tk.Tk):  # Main app class
     def solve_button_clicked(self):
         # Solve the sudoku puzzle
         if self.misc_solve_options.cell_option.get() == ("specific" or "check_progress"):
-            self.choose_cells_window = solve_options.ChooseCellsWindow(self.misc_solve_options.cell_option.get(),
-                                                                       self.cell_texts, self.display_answer,
-                                                                       self.puzzle_config.grid_dim, self)
+            self.choose_cells_window = solve_options.ChooseCellsWindow(self)
         else:
-            solve.solve_sudoku(self.cell_texts, self.misc_solve_options.cell_option.get(), self.display_answer,
-                               self.solve_clear.solve_button, self.solve_clear.clear_button,
-                               self.puzzle_config.grid_dim, self.puzzle_config.puzzle_type.get(), self.ks_cages,
-                               self.ks_totals, self.horizontal_greater, self.vertical_greater)
+            solve.solve_sudoku(self)
 
     def clear_button_clicked(self):
         # Clear user-entered numbers on the sudoku grid
-        misc_funcs.clear_button_clicked_func(self.cell_texts, self.solve_clear.solve_button,
-                                             self.solve_clear.clear_button, self.puzzle_config.grid_dim)
+        misc_funcs.clear_button_clicked_func(self)
 
     def ks_done_button_clicked(self):
         # Button for where the user has finished typing a cage's total has been clicked
-        all_selected, valid_total = \
-            ks_cages_setup.ks_total_clicked(self.killer_sudoku_cage_def.grid_buttons, self.ks_cages,
-                                            self.killer_sudoku_cage_def.total_text, self.ks_totals)
+        all_selected, valid_total = ks_cages_setup.ks_total_clicked(self)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
-            puzzle_grid = puzzle_grids.KillerSudokuGrid(self, self.cell_texts, self.display_answer)
+            puzzle_grid = puzzle_grids.KillerSudokuGrid(self)
             puzzle_grid.grid(column=0, row=0)
             self.show_solve_options()
             self.puzzle_config.options_frame.grid_remove()
