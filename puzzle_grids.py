@@ -154,3 +154,100 @@ class HyperSudokuGrid(tk.Canvas):
             for i in range(9):
                 grid_windows.append(self.create_window(25 + ((i + 0.5) * 50), 25 + ((j + 0.5) * 50)))
                 self.itemconfigure(grid_windows[i + (j * 9)], window=cell_texts[i + (j * 9)])
+
+
+class GreaterThanSudokuGrid(tk.Canvas):
+    def __init__(self, container, cell_texts, display_answer, horizontal_buttons, vertical_buttons, horizontal_greater,
+                 vertical_greater):
+        super().__init__(container)
+
+        self.horizontal_buttons = horizontal_buttons
+        self.vertical_buttons = vertical_buttons
+        self.horizontal_greater = horizontal_greater
+        self.vertical_greater = vertical_greater
+
+        for i in range(54):
+            self.horizontal_greater.append("left")
+            self.vertical_greater.append("up")
+
+        self["width"] = 500
+        self["height"] = 500
+        # Drawing the outline of the grid
+        c1 = 25
+        c2 = 475
+        self.create_polygon(c1, c1, c1, c2, c2, c2, c2, c1, width=10, fill="white", outline="black")
+        # Drawing the bold lines of the grid
+        bold_lines = []
+        for i in range(175, 326, 150):
+            bold_lines.append(self.create_line(i, c1, i, c2, width=8))
+            bold_lines.append(self.create_line(c1, i, c2, i, width=8))
+        # Drawing the light lines of the grid
+        light_lines = []
+        for i in range(75, 426, 50):
+            light_lines.append(self.create_line(i, c1, i, c2, width=4))
+            light_lines.append(self.create_line(c1, i, c2, i, width=4))
+        # Create cell_texts text boxes, which hold user inputted values
+        for i in range(81):
+            cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat"))
+            display_answer.append(False)
+        # Add containers to hold text boxes
+        grid_windows = []
+        for j in range(9):
+            for i in range(9):
+                grid_windows.append(self.create_window(25 + ((i + 0.5) * 50), 25 + ((j + 0.5) * 50)))
+                self.itemconfigure(grid_windows[i + (j * 9)], window=cell_texts[i + (j * 9)])
+        # Create buttons to change greater than orientation
+        # Horizontal buttons: > or <, vertical buttons: ^ or v
+        for i in range(54):
+            self.horizontal_buttons.append(tk.Button(self, width=2, height=1, bg="yellow",
+                                                     command=lambda x=i: self.horizontal_button_clicked(x)))
+            self.vertical_buttons.append(tk.Button(self, width=2, height=1, bg="yellow",
+                                                   command=lambda x=i: self.vertical_button_clicked(x)))
+        # Add containers to hold buttons
+        horizontal_button_windows = []
+        vertical_button_windows = []
+        for i in range(9):
+            horizontal_button_windows.append(self.create_window(75, 25 + ((i + 0.5) * 50)))
+            horizontal_button_windows.append(self.create_window(125, 25 + ((i + 0.5) * 50)))
+            horizontal_button_windows.append(self.create_window(225, 25 + ((i + 0.5) * 50)))
+            horizontal_button_windows.append(self.create_window(275, 25 + ((i + 0.5) * 50)))
+            horizontal_button_windows.append(self.create_window(375, 25 + ((i + 0.5) * 50)))
+            horizontal_button_windows.append(self.create_window(425, 25 + ((i + 0.5) * 50)))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 75 + (50 * i)))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 225 + (50 * i)))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 375 + (50 * i)))
+        for i in range(54):
+            self.itemconfigure(horizontal_button_windows[i], window=self.horizontal_buttons[i])
+            self.itemconfigure(vertical_button_windows[i], window=self.vertical_buttons[i])
+
+    def horizontal_button_clicked(self, i):
+        # Horizontal (< or >) greater than sudoku button clicked
+        if self.horizontal_buttons[i]["text"] == "":
+            # The button has never been clicked
+            self.horizontal_buttons[i]["text"] = ">"
+            self.horizontal_buttons[i]["bg"] = "white"
+        elif self.horizontal_buttons[i]["text"] == ">":
+            self.horizontal_buttons[i]["text"] = "<"
+            self.horizontal_greater[i] = "right"
+        elif self.horizontal_buttons[i]["text"] == "<":
+            self.horizontal_buttons[i]["text"] = ">"
+            self.horizontal_greater[i] = "left"
+
+    def vertical_button_clicked(self, i):
+        # Vertical ( ∧ or v) greater than sudoku button clicked
+        if self.vertical_buttons[i]["text"] == "":
+            # The button has never been clicked
+            self.vertical_buttons[i]["text"] = "v"
+            self.vertical_buttons[i]["bg"] = "white"
+        elif self.vertical_buttons[i]["text"] == "v":
+            self.vertical_buttons[i]["text"] = "^"
+            self.vertical_greater[i] = "down"
+        elif self.vertical_buttons[i]["text"] == "^":
+            self.vertical_buttons[i]["text"] = "v"
+            self.vertical_greater[i] = "up"

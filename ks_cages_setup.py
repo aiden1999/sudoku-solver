@@ -19,6 +19,7 @@ class KillerSudokuCageDef(tk.Toplevel):
         cell_frames = []  # Frames that each contain one button
         for i in range(81):  # Put buttons into frames
             cell_frames.append(tk.Frame(grid_frame, height=50, width=50))
+            # noinspection PyTypeChecker
             cell_frames[i].pack_propagate(0)
             self.grid_buttons.append(tk.Button(cell_frames[i], width=10, height=10, bg="white",
                                                command=lambda x=i: self.grid_button_clicked(x)))
@@ -140,6 +141,7 @@ def generate_ks_colours(cages):
         chosen_colours.append("white")
     for cage in cages:
         cage_adj_colours = []
+        colour_choice = None
         for cell in cage:  # Determine adjacent colours
             cell_row = misc_funcs.i_to_rc(cell, 9)[0]
             cell_col = misc_funcs.i_to_rc(cell, 9)[1]
