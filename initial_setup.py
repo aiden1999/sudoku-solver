@@ -22,6 +22,8 @@ class App(tk.Tk):  # Main app class
         self.ks_totals = []  # List of ints, ks_totals[n] corresponds to ks_cages[n]
         self.gt_vertical_buttons = []  # Buttons on greater than sudoku grid
         self.gt_horizontal_buttons = []  # Buttons on greater than sudoku grid
+        self.horizontal_greater = []  # Stores 'left' or 'right', depending on which value is greater
+        self.vertical_greater = []  # Stores 'up' or 'down' depending on which value is greater
 
         self.title("Puzzle Solver")
         self.puzzle_config = PuzzleConfig(self)  # create window for choosing the type of puzzle
@@ -49,15 +51,17 @@ class App(tk.Tk):  # Main app class
             self.puzzle_config.options_frame.grid_remove()
 
         if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
+            self.puzzle_config.grid_dim = 9
             puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self, self.cell_texts, self.display_answer,
-                                                             self.gt_horizontal_buttons, self.gt_vertical_buttons)
+                                                             self.gt_horizontal_buttons, self.gt_vertical_buttons,
+                                                             self.horizontal_greater, self.vertical_greater)
             puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
     def show_solve_options(self):
         # Show options for which cells to solve, and solve/clear buttons
-        self.misc_solve_options = solve_options.MiscOptions(self.options_frame, self)
+        self.misc_solve_options = solve_options.MiscOptions(self.options_frame)
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
         self.solve_clear = solve_options.SolveClear(self, self.options_frame)
         self.solve_clear.buttons_frame.grid(column=0, row=1)
@@ -73,7 +77,7 @@ class App(tk.Tk):  # Main app class
             solve.solve_sudoku(self.cell_texts, self.misc_solve_options.cell_option.get(), self.display_answer,
                                self.solve_clear.solve_button, self.solve_clear.clear_button,
                                self.puzzle_config.grid_dim, self.puzzle_config.puzzle_type.get(), self.ks_cages,
-                               self.ks_totals)
+                               self.ks_totals, self.horizontal_greater, self.vertical_greater)
 
     def clear_button_clicked(self):
         # Clear user-entered numbers on the sudoku grid

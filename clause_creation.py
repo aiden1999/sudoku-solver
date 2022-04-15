@@ -2,13 +2,15 @@ import math
 import misc_funcs
 
 
-def define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals):
+def define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals, horizontal_greater, vertical_greater):
     if sudoku_type == "sudoku":
         define_standard_clauses(puzzle, sat_solver, grid_dim)
     if sudoku_type == "killer_sudoku":
         define_killer_sudoku_clauses(puzzle, sat_solver, cages, totals)
     if sudoku_type == "hyper_sudoku":
         define_hyper_sudoku_clauses(puzzle, sat_solver)
+    if sudoku_type == "greater_than_sudoku":
+        define_greater_than_sudoku_clauses(puzzle, horizontal_greater, vertical_greater, sat_solver)
 
 
 def define_standard_clauses(puzzle, sat_solver, grid_dim):
@@ -77,7 +79,7 @@ def two_neg_clauses(n1, c1, r1, n2, c2, r2, grid_dim):
 
 def ncr_to_var(number, column, row, grid_dim):
     # Converts a combination of a number, a column and a row to a unique identifier
-    return number + (grid_dim * column) + ((grid_dim ** 2) * row)
+    return int(number + (grid_dim * column) + ((grid_dim ** 2) * row))
 
 
 def col_row_mod(column, row, grid_dim):
@@ -195,4 +197,143 @@ def define_hyper_sudoku_clauses(puzzle, sat_solver):
     blocks_rule(sat_solver, 1, 5, 9)  # Bottom left
     blocks_rule(sat_solver, 5, 1, 9)  # Top right
     blocks_rule(sat_solver, 5, 5, 9)  # Bottom right
+    define_standard_clauses(puzzle, sat_solver, 9)
+
+
+def define_greater_than_sudoku_clauses(puzzle, horizontal_greater, vertical_greater, sat_solver):
+    for i in range(81):
+        greater_than_count = 0
+        if i in [0, 3, 6, 27, 30, 33, 54, 57, 60]:  # Top left corner
+            edges_count = 2
+            right_i = int(i * (2 / 3))
+            down_i = int(right_i + ((i % 9) / 3))
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        elif i in [2, 5, 8, 29, 32, 35, 56, 59, 62]:  # Top right corner
+            edges_count = 2
+            left_i = int(((2 * i) - 1) / 3)
+            down_i = int(left_i + (((i % 9) + 1) / 3))
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        elif i in [18, 21, 24, 45, 48, 51, 72, 75, 78]:  # Bottom left corner
+            edges_count = 2
+            right_i = int(i * (2 / 3))
+            up_i = int(right_i + (3 - ((i % 9) / 3)))
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+        elif i in [20, 23, 26, 47, 50, 53, 74, 77, 80]:  # Bottom right corner
+            edges_count = 2
+            left_i = int(((2 * i) - 1) / 3)
+            up_i = int(left_i - (3 - ((i % 9) / 3)))
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+        elif i in [1, 4, 7, 28, 31, 34, 55, 58, 61]:  # Top side
+            edges_count = 3
+            left_i = int((i - 1) * (2 / 3))
+            right_i = left_i + 1
+            down_i = int(right_i + (((i % 9) - 1) / 3))
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        elif i in [9, 12, 15, 36, 39, 42, 63, 66, 69]:  # Left side
+            edges_count = 3
+            up_i = int((i % 9) + (18 * (i // 30)))
+            right_i = int(i * (2 / 3))
+            down_i = up_i + 9
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        elif i in [11, 14, 17, 38, 41, 44, 65, 68, 71]:  # Right side
+            edges_count = 3
+            up_i = int((i % 9) + (18 * (i // 30)))
+            left_i = int(((i + 1) * (2 / 3)) - 1)
+            down_i = up_i + 9
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        elif i in [19, 22, 25, 46, 49, 52, 73, 76, 79]:  # Bottom side
+            edges_count = 3
+            up_i = i - (((i // 30) + 1) * 9)
+            left_i = int((i - 1) * (2 / 3))
+            right_i = left_i + 1
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+        else:  # Centre cell
+            edges_count = 4
+            up_i = i - (((i // 30) + 1) * 9)
+            left_i = int((i - 1) * (2 / 3))
+            right_i = left_i + 1
+            down_i = up_i + 9
+            if vertical_greater[up_i] == "down":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[left_i] == "right":
+                greater_than_count = greater_than_count + 1
+            if horizontal_greater[right_i] == "left":
+                greater_than_count = greater_than_count + 1
+            if vertical_greater[down_i] == "up":
+                greater_than_count = greater_than_count + 1
+        i_row, i_col = misc_funcs.i_to_rc(i, 9)
+        encoded_nums = [0]
+        for j in range(1, 10):
+            encoded_nums.append(ncr_to_var(j, i_col, i_row, 9))
+        if edges_count == 2:
+            if greater_than_count == 2:
+                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
+                                       encoded_nums[5], encoded_nums[4], encoded_nums[3]])
+            elif greater_than_count == 1:
+                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
+                                       encoded_nums[4], encoded_nums[3], encoded_nums[2]])
+            else:
+                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
+                                       encoded_nums[3], encoded_nums[2], encoded_nums[1]])
+        elif edges_count == 3:
+            if greater_than_count == 3:
+                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
+                                       encoded_nums[5], encoded_nums[4]])
+            elif greater_than_count == 2:
+                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
+                                       encoded_nums[4], encoded_nums[3]])
+            elif greater_than_count == 1:
+                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
+                                       encoded_nums[3], encoded_nums[2]])
+            else:
+                sat_solver.add_clause([encoded_nums[6], encoded_nums[5], encoded_nums[4], encoded_nums[3],
+                                       encoded_nums[2], encoded_nums[1]])
+        else:
+            if greater_than_count == 4:
+                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
+                                       encoded_nums[5]])
+            elif greater_than_count == 3:
+                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
+                                       encoded_nums[4]])
+            elif greater_than_count == 2:
+                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
+                                       encoded_nums[3]])
+            elif greater_than_count == 1:
+                sat_solver.add_clause([encoded_nums[6], encoded_nums[5], encoded_nums[4], encoded_nums[3],
+                                       encoded_nums[2]])
+            else:
+                sat_solver.add_clause([encoded_nums[5], encoded_nums[4], encoded_nums[3], encoded_nums[2],
+                                       encoded_nums[1]])
     define_standard_clauses(puzzle, sat_solver, 9)

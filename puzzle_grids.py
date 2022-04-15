@@ -157,13 +157,14 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
-    def __init__(self, container, cell_texts, display_answer, horizontal_buttons, vertical_buttons):
+    def __init__(self, container, cell_texts, display_answer, horizontal_buttons, vertical_buttons, horizontal_greater,
+                 vertical_greater):
         super().__init__(container)
 
         self.horizontal_buttons = horizontal_buttons
         self.vertical_buttons = vertical_buttons
-        self.horizontal_greater = []  # Stores 'left' or 'right', depending on which value is greater
-        self.vertical_greater = []  # Stores 'up' or 'down' depending on which value is greater
+        self.horizontal_greater = horizontal_greater
+        self.vertical_greater = vertical_greater
 
         for i in range(54):
             self.horizontal_greater.append("left")
@@ -212,12 +213,15 @@ class GreaterThanSudokuGrid(tk.Canvas):
             horizontal_button_windows.append(self.create_window(275, 25 + ((i + 0.5) * 50)))
             horizontal_button_windows.append(self.create_window(375, 25 + ((i + 0.5) * 50)))
             horizontal_button_windows.append(self.create_window(425, 25 + ((i + 0.5) * 50)))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 75))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 125))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 225))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 275))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 375))
-            vertical_button_windows.append(self.create_window(25 + ((i + 0.5) * 50), 425))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 75 + (50 * i)))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 225 + (50 * i)))
+        for i in range(2):
+            for j in range(9):
+                vertical_button_windows.append(self.create_window((j + 1) * 50, 375 + (50 * i)))
         for i in range(54):
             self.itemconfigure(horizontal_button_windows[i], window=self.horizontal_buttons[i])
             self.itemconfigure(vertical_button_windows[i], window=self.vertical_buttons[i])

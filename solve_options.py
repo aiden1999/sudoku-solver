@@ -18,7 +18,7 @@ class SolveClear:
 
 class MiscOptions:
     # Options for which cells to solve: all, random, specific, check progress
-    def __init__(self, container, root):
+    def __init__(self, container):
         self.cell_option = tk.StringVar()  # The chosen option
 
         self.misc_options_frame = tk.Frame(container, borderwidth=5, relief="groove")
@@ -65,6 +65,7 @@ class ChooseCellsWindow(tk.Toplevel):
                 self.cell_frames.append(tk.Frame(self.grid_frame, height=30, width=30))
             else:
                 self.cell_frames.append(tk.Frame(self.grid_frame, height=50, width=50))
+            # noinspection PyTypeChecker
             self.cell_frames[i].pack_propagate(0)
             self.grid_buttons.append(tk.Button(self.cell_frames[i], width=10, height=10, bg="white",
                                                command=lambda x=i: self.grid_button_clicked(x)))
@@ -130,30 +131,26 @@ class ChooseCellsWindow(tk.Toplevel):
 
     def grid_button_clicked(self, i):
         # Grid button i is clicked
-        grid_button_clicked_func(self.option, self.grid_buttons, self.display_answer, i)
+        if self.option == "specific":
+            if self.grid_buttons[i]["bg"] == "white":  # Mark cells that aren't going to be solved as to be solved
+                self.grid_buttons[i]["bg"] = "blue"
+                self.display_answer[i] = True
+            elif self.grid_buttons[i]["bg"] == "blue":  # Reverse of above
+                self.grid_buttons[i]["bg"] = "white"
+                self.display_answer[i] = False
+        if self.option == "check_progress":
+            if self.grid_buttons[i]["bg"] == "black":  # Mark original answer as user answer
+                self.grid_buttons[i]["bg"] = "blue"
+                self.display_answer[i] = False
+            elif self.grid_buttons[i]["bg"] == "blue":  # Mark user answer as original answer
+                self.grid_buttons[i]["bg"] = "black"
+                self.display_answer[i] = True
 
     def done_button_clicked(self):
         solve.solve_sudoku(self.cell_texts, self.root.misc_solve_options.cell_option.get(), self.display_answer,
                            self.root.solve_clear.solve_button, self.root.solve_clear.clear_button,
                            self.root.puzzle_config.grid_dim, self.root.puzzle_config.puzzle_type.get(),
-                           self.root.ks_cages, self.root.ks_totals)
+                           self.root.ks_cages, self.root.ks_totals, self.root.horizontal_greater,
+                           self.root.vertical_greater)
         # Close window once finished
         self.destroy()
-
-
-def grid_button_clicked_func(option, grid_buttons, display_answer, i):
-    if option == "specific":
-        if grid_buttons[i]["bg"] == "white":  # Mark cells that aren't going to be solved as to be solved
-            grid_buttons[i]["bg"] = "blue"
-            display_answer[i] = True
-        elif grid_buttons[i]["bg"] == "blue":  # Mark cells that are going to be solved as not going to be solved
-            grid_buttons[i]["bg"] = "white"
-            display_answer[i] = False
-
-    if option == "check_progress":
-        if grid_buttons[i]["bg"] == "black":  # Mark original answer as user answer
-            grid_buttons[i]["bg"] = "blue"
-            display_answer[i] = False
-        elif grid_buttons[i]["bg"] == "blue":  # Mark user answer as original answer
-            grid_buttons[i]["bg"] = "black"
-            display_answer[i] = True
