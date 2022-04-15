@@ -12,21 +12,24 @@ class SatSolver(Glucose3, ABC):
         super().__init__()
 
 
-def solve_sudoku(cell_texts, cell_option, display_answer, solve_button, clear_button, grid_dim, sudoku_type, cages,
-                 totals, horizontal_greater, vertical_greater):
-    is_valid = get_input(cell_texts, grid_dim)[0]  # Bool, whether the user input is valid or not
-    puzzle = get_input(cell_texts, grid_dim)[1]  # Puzzle input as a list of lists
+def solve_sudoku(root):
+
+    cell_option = root.misc_solve_options.cell_option.get()
+    cell_texts = root.puzzle_grid.cell_texts
+    solve_button = root.solve_clear.solve_button
+    clear_button = root.solve_clear.clear_button
+    grid_dim = root.puzzle_config.grid_dim
+
+    is_valid, puzzle = get_input(cell_texts, grid_dim)  # Bool, is user input valid; Puzzle input as a list of lists
     if (cell_option == "all") or (cell_option == "random"):
-        display_answer = 0  # display_answer isn't needed
+        display_answer = 0  # display_answer isn't needed MIGHT BE ABLE TO GET RID OF THIS
     if is_valid and (cell_option == "check_progress"):
-        check_progress(puzzle, cell_texts, solve_button, clear_button, display_answer, grid_dim, sudoku_type, cages,
-                       totals, horizontal_greater, vertical_greater)
+        check_progress(puzzle, root)
     elif is_valid:
         sat_solver = SatSolver()
-        clause_creation.define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals, horizontal_greater,
-                                       vertical_greater)
+        clause_creation.define_clauses(puzzle, sat_solver, root)
         if sat_solver.solve():  # There exists a solution
-            decode(sat_solver, cell_option, cell_texts, display_answer, grid_dim)
+            decode(sat_solver, root)
         else:
             showerror(title="Error", message="No solution found.")
         misc_funcs.disable_cell_text(cell_texts, grid_dim)
@@ -59,8 +62,14 @@ def get_input(cell_texts, grid_dim):
     return is_valid, puzzle
 
 
-def decode(sat_solver, cell_option, cell_texts, display_answer, grid_dim):
+def decode(sat_solver, root):
     # Converts the solution into values for display, and then displays them
+
+    cell_option = root.misc_solve_options.cell_option.get()
+    grid_dim = root.puzzle_config.grid_dim
+    cell_texts = root.puzzle_grid.cell_texts
+    display_answer = root.puzzle_grid.display_answer
+
     solution = sat_solver.get_model()  # Solution provided by the SAT solver
     true_vars = []
     for i in solution:
@@ -109,11 +118,16 @@ def show_answer(cell_texts, true_vars_decoded, index):
     cell_texts[index].tag_config("make blue", foreground="blue")
 
 
-def check_progress(puzzle, cell_texts, solve_button, clear_button, display_answer, grid_dim, sudoku_type, cages,
-                   totals, horizontal_greater, vertical_greater):
+def check_progress(puzzle, root):
+
+    solve_button = root.solve_clear.solve_button
+    clear_button = root.solve_clear.solve_button
+    cell_texts = root.puzzle_grid.cell_texts
+    grid_dim = root.puzzle_config.grid_dim
+    display_answer = root.puzzle_grid.display_answer
+
     sat_solver = SatSolver()
-    clause_creation.define_clauses(puzzle, sat_solver, grid_dim, sudoku_type, cages, totals, horizontal_greater,
-                                   vertical_greater)
+    clause_creation.define_clauses(puzzle, sat_solver, root)
     if sat_solver.solve():  # The puzzle can be solved with the user's answers, ie the puzzle is correct so far
         showinfo("Congratulations", "Your progress is correct so far.")
         misc_funcs.disable_cell_text(cell_texts, grid_dim)
@@ -133,8 +147,7 @@ def check_progress(puzzle, cell_texts, solve_button, clear_button, display_answe
                 original_puzzle.append(row)
                 row = []
         sat_solver2 = SatSolver()
-        clause_creation.define_clauses(original_puzzle, sat_solver2, grid_dim, sudoku_type, cages, totals,
-                                       horizontal_greater, vertical_greater)
+        clause_creation.define_clauses(original_puzzle, sat_solver2, root)
         if not sat_solver2.solve():  # Original puzzle couldn't be solved
             showerror(title="Error", message="No solution found to original puzzle.")
             misc_funcs.disable_cell_text(cell_texts, grid_dim)

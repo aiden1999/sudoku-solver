@@ -1,5 +1,9 @@
-def clear_button_clicked_func(cell_texts, solve_button, clear_button, grid_dim):
-    reset_cell_text(cell_texts, grid_dim)
+def clear_button_clicked_func(root):
+
+    solve_button = root.misc_solve_options.solve_button
+    clear_button = root.misc_solve_options.clear_button
+
+    reset_cell_text(root)
     solve_button["state"] = "normal"
     clear_button["state"] = "disabled"
 
@@ -17,8 +21,12 @@ def disable_cell_text(cell_texts, grid_dim):
         cell_texts[i].configure(state="disabled")
 
 
-def reset_cell_text(cell_texts, grid_dim):
+def reset_cell_text(root):
     # Resets all parameter text boxes to their original state
+
+    grid_dim = root.puzzle_config.grid_dim
+    cell_texts = root.puzzle_grid.cell_texts
+
     for i in range(grid_dim ** 2):
         cell_texts[i].configure(state="normal")
         cell_texts[i].tag_add("make black", "1.0", "end")

@@ -103,7 +103,13 @@ def ks_grid_button_clicked(i, grid_buttons, ks_count):
     return ks_count  # Returns the number of cells that are in the current cage
 
 
-def ks_total_clicked(grid_buttons, ks_cages, total_text, ks_totals):
+def ks_total_clicked(root):
+
+    grid_buttons = root.killer_sudoku_cage_def.grid_buttons
+    ks_cages = root.ks_cages
+    total_text = root.killer_sudoku_cage_def.total_text
+    ks_totals = root.ks_totals
+
     # User has entered the total and is therefore finished with defining the cage
     cage_size = 0
     for i in range(81):
