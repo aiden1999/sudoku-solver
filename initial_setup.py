@@ -125,8 +125,8 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
         self.grid_size_frame.grid(row=1, sticky="W", pady=5)
         grid_size_label = tk.Label(self.grid_size_frame, text="Choose a grid size:", font=20)
         grid_size_label.grid(column=0, row=0, )
-        current_size = tk.StringVar()
-        self.grid_size_combobox = ttk.Combobox(self.grid_size_frame, textvariable=current_size)
+        self.current_size = tk.StringVar()
+        self.grid_size_combobox = ttk.Combobox(self.grid_size_frame, textvariable=self.current_size)
         self.grid_size_combobox["values"] = ("4 x 4", "6 x 6", "9 x 9", "16 x 16", "25 x 25")
         self.grid_size_combobox["state"] = "readonly"
         self.grid_size_combobox.set("9 x 9")
