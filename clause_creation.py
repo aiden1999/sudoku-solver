@@ -235,7 +235,7 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
         elif i in [18, 21, 24, 45, 48, 51, 72, 75, 78]:  # Bottom left corner
             edges_count = 2
             right_i = int(i * (2 / 3))
-            up_i = int(right_i + (3 - ((i % 9) / 3)))
+            up_i = int(right_i - (3 - ((i % 9) / 3)))
             if horizontal_greater[right_i] == "left":
                 greater_than_count = greater_than_count + 1
             if vertical_greater[up_i] == "down":
@@ -243,7 +243,7 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
         elif i in [20, 23, 26, 47, 50, 53, 74, 77, 80]:  # Bottom right corner
             edges_count = 2
             left_i = int(((2 * i) - 1) / 3)
-            up_i = int(left_i - (3 - ((i % 9) / 3)))
+            up_i = int(left_i - (3 - (((i % 9) + 1) / 3)))
             if horizontal_greater[left_i] == "right":
                 greater_than_count = greater_than_count + 1
             if vertical_greater[up_i] == "down":
@@ -349,4 +349,78 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
             else:
                 sat_solver.add_clause([encoded_nums[5], encoded_nums[4], encoded_nums[3], encoded_nums[2],
                                        encoded_nums[1]])
+    x_var = 730
+    for i in range(len(horizontal_greater)):
+        left_cell = i + (i // 2)  # location of cell to the left of the inequality sign (0 to 79)
+        right_cell = left_cell + 1  # location of cell to the right of the inequality sign (1 to 80)
+        left_cell_encoded = [0]
+        right_cell_encoded = [0]
+        left_r, left_c = misc_funcs.i_to_rc(left_cell, 9)
+        right_r, right_c = misc_funcs.i_to_rc(right_cell, 9)
+        for j in range(1, 10):
+            left_cell_encoded.append(ncr_to_var(j, left_c, left_r, 9))
+            right_cell_encoded.append(ncr_to_var(j, right_c, right_r, 9))
+        dnf_clause = []
+        for left_num in range(1, 10):
+            for right_num in range(1, 10):
+                if (left_num > right_num) and (horizontal_greater[i] == "left"):
+                    dnf_clause.append([left_cell_encoded[left_num], right_cell_encoded[right_num]])
+                if (left_num < right_num) and (horizontal_greater[i] == "right"):
+                    dnf_clause.append([left_cell_encoded[left_num], right_cell_encoded[right_num]])
+        #  Convert DNF to CNF
+        for sub_clause in dnf_clause:
+            temp_clause = [x_var]
+            for num in sub_clause:
+                temp_clause.append(- num)
+            sat_solver.add_clause(temp_clause)
+            for num in sub_clause:
+                temp_clause = [- x_var, num]
+                sat_solver.add_clause(temp_clause)
+            x_var = x_var + 1
+        sat_solver.add_clause([x_var])
+        total_sub_clauses = len(dnf_clause)
+        all_x_var = [- x_var]
+        for j in range(total_sub_clauses):
+            old_x_var = x_var - (j + 1)
+            sat_solver.add_clause([x_var, - old_x_var])
+            all_x_var.append(old_x_var)
+        sat_solver.add_clause(all_x_var)
+        x_var = x_var + 1
+    for i in range(len(vertical_greater)):
+        up_cell = i + (9 * (i // 18))
+        down_cell = up_cell + 9
+        up_cell_encoded = [0]
+        down_cell_encoded = [0]
+        up_r, up_c = misc_funcs.i_to_rc(up_cell, 9)
+        down_r, down_c = misc_funcs.i_to_rc(down_cell, 9)
+        for j in range(1, 10):
+            up_cell_encoded.append(ncr_to_var(j, up_c, up_r, 9))
+            down_cell_encoded.append(ncr_to_var(j, down_c, down_r, 9))
+        dnf_clause = []
+        for up_num in range(1, 10):
+            for down_num in range(1, 10):
+                if (up_num > down_num) and (vertical_greater[i] == "up"):
+                    dnf_clause.append([up_cell_encoded[up_num], down_cell_encoded[down_num]])
+                if (up_num < down_num) and (vertical_greater[i] == "down"):
+                    dnf_clause.append([up_cell_encoded[up_num], down_cell_encoded[down_num]])
+        # Convert DNF to CNF
+        for sub_clause in dnf_clause:
+            temp_clause = [x_var]
+            for num in sub_clause:
+                temp_clause.append(- num)
+            sat_solver.add_clause(temp_clause)
+            for num in sub_clause:
+                temp_clause = [- x_var, num]
+                sat_solver.add_clause(temp_clause)
+            x_var = x_var + 1
+        sat_solver.add_clause([x_var])
+        total_sub_clauses = len(dnf_clause)
+        all_x_var = [- x_var]
+        for j in range(total_sub_clauses):
+            old_x_var = x_var - (j + 1)
+            sat_solver.add_clause([x_var, old_x_var])
+            all_x_var.append(old_x_var)
+        sat_solver.add_clause(all_x_var)
+        x_var = x_var + 1
+    # Standard sudoku rules (including numbers already in puzzle
     define_standard_clauses(puzzle, sat_solver, 9)
