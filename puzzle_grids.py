@@ -212,9 +212,9 @@ class GreaterThanSudokuGrid(tk.Canvas):
         # Create buttons to change greater than orientation
         # Horizontal buttons: > or <, vertical buttons: ^ or v
         for i in range(54):
-            self.horizontal_buttons.append(tk.Button(self, width=2, height=1, bg="yellow",
+            self.horizontal_buttons.append(tk.Button(self, width=1, height=1, bg="yellow",
                                                      command=lambda x=i: self.horizontal_button_clicked(x)))
-            self.vertical_buttons.append(tk.Button(self, width=2, height=1, bg="yellow",
+            self.vertical_buttons.append(tk.Button(self, width=1, height=1, bg="yellow",
                                                    command=lambda x=i: self.vertical_button_clicked(x)))
         # Add containers to hold buttons
         horizontal_button_windows = []
