@@ -11,6 +11,7 @@ class App(tk.Tk):  # Main app class
     def __init__(self):
         super().__init__()
 
+        self.puzzle_grid = None
         self.misc_solve_options = None  # Frame containing random, specific cell, check progress etc.
         self.killer_sudoku_cage_def = None  # Window where the cages of a killer sudoku puzzle are defined
         self.choose_cells_window = None  # Window for choosing cells when using specific cell option or check progress
@@ -27,8 +28,8 @@ class App(tk.Tk):  # Main app class
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             current_size_txt = self.puzzle_config.grid_size_combobox.get()
             self.puzzle_config.grid_dim = misc_funcs.size_str_to_int(current_size_txt)
-            puzzle_grid = puzzle_grids.SudokuGrid(self, self.puzzle_config.grid_dim)
-            puzzle_grid.grid(column=0, row=0)
+            self.puzzle_grid = puzzle_grids.SudokuGrid(self, self.puzzle_config.grid_dim)
+            self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
@@ -38,15 +39,15 @@ class App(tk.Tk):  # Main app class
 
         if self.puzzle_config.puzzle_type.get() == "hyper_sudoku":
             self.puzzle_config.grid_dim = 9
-            puzzle_grid = puzzle_grids.HyperSudokuGrid(self)
-            puzzle_grid.grid(column=0, row=0)
+            self.puzzle_grid = puzzle_grids.HyperSudokuGrid(self)
+            self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
         if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
             self.puzzle_config.grid_dim = 9
-            puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self)
-            puzzle_grid.grid(column=0, row=0)
+            self.puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self)
+            self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)
             self.puzzle_config.options_frame.grid_remove()
 
@@ -73,8 +74,8 @@ class App(tk.Tk):  # Main app class
         # Button for where the user has finished typing a cage's total has been clicked
         all_selected, valid_total = ks_cages_setup.ks_total_clicked(self)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
-            puzzle_grid = puzzle_grids.KillerSudokuGrid(self)
-            puzzle_grid.grid(column=0, row=0)
+            self.puzzle_grid = puzzle_grids.KillerSudokuGrid(self)
+            self.puzzle_grid.grid(column=0, row=0)
             self.show_solve_options()
             self.puzzle_config.options_frame.grid_remove()
             self.killer_sudoku_cage_def.destroy()
