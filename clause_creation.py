@@ -179,24 +179,7 @@ def define_killer_sudoku_clauses(puzzle, sat_solver, root):
                 encoded_permutation.append(ncr_to_var(current_number, current_column, current_row, 9))
             encoded_permutations.append(encoded_permutation)
         # Convert DNF to CNF and add CNF clauses
-        for permutation in encoded_permutations:
-            temp_clause = [x_var]
-            for num in permutation:
-                temp_clause.append(- num)
-            sat_solver.add_clause(temp_clause)  # X1 -A -B
-            for num in permutation:
-                temp_clause = [- x_var, num]
-                sat_solver.add_clause(temp_clause)  # -X1 A
-            x_var = x_var + 1
-        sat_solver.add_clause([x_var])  # X(N + 1)
-        total_permutations = len(encoded_permutations)
-        all_x_var = [- x_var]
-        for j in range(total_permutations):
-            old_x_var = x_var - (j + 1)
-            sat_solver.add_clause([x_var, - old_x_var])
-            all_x_var.append(old_x_var)
-        sat_solver.add_clause(all_x_var)
-        x_var = x_var + 1
+        x_var = dnf_to_cnf(encoded_permutations, x_var, sat_solver)
     # Standard sudoku rules (including numbers already in puzzle)
     define_standard_clauses(puzzle, sat_solver, 9)
 
