@@ -2,10 +2,11 @@ import tkinter as tk
 import math
 import ks_cages_setup
 import misc_funcs
+import initial_setup
 
 
 class SudokuGrid(tk.Canvas):
-    def __init__(self, container, grid_size):
+    def __init__(self, container: initial_setup.App, grid_size: int) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -64,7 +65,7 @@ class SudokuGrid(tk.Canvas):
 
 
 class KillerSudokuGrid(tk.Canvas):
-    def __init__(self, container):
+    def __init__(self, container: initial_setup.App) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -120,7 +121,7 @@ class KillerSudokuGrid(tk.Canvas):
 
 
 class HyperSudokuGrid(tk.Canvas):
-    def __init__(self, container):
+    def __init__(self, container: initial_setup.App) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -169,7 +170,7 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
-    def __init__(self, container):
+    def __init__(self, container: initial_setup.App) -> None:
         super().__init__(container)
 
         self.horizontal_buttons = []  # Buttons on greater than sudoku grid
@@ -239,7 +240,7 @@ class GreaterThanSudokuGrid(tk.Canvas):
             self.itemconfigure(horizontal_button_windows[i], window=self.horizontal_buttons[i])
             self.itemconfigure(vertical_button_windows[i], window=self.vertical_buttons[i])
 
-    def horizontal_button_clicked(self, i):
+    def horizontal_button_clicked(self, i: int) -> None:
         # Horizontal (< or >) greater than sudoku button clicked
         if self.horizontal_buttons[i]["text"] == "":
             # The button has never been clicked
@@ -252,7 +253,7 @@ class GreaterThanSudokuGrid(tk.Canvas):
             self.horizontal_buttons[i]["text"] = ">"
             self.horizontal_greater[i] = "left"
 
-    def vertical_button_clicked(self, i):
+    def vertical_button_clicked(self, i: int) -> None:
         # Vertical ( ∧ or v) greater than sudoku button clicked
         if self.vertical_buttons[i]["text"] == "":
             # The button has never been clicked
