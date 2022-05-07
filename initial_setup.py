@@ -1,3 +1,7 @@
+""" Contains the App class and the PuzzleConfig class. The App class contains all the many of the UI elements as
+    attributes. The PuzzleConfig class """
+
+
 import tkinter as tk
 from tkinter import ttk
 import misc_funcs
@@ -8,7 +12,7 @@ import solve
 
 
 class App(tk.Tk):  # Main app class
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.puzzle_grid = None  # The sudoku puzzle grid
@@ -23,7 +27,7 @@ class App(tk.Tk):  # Main app class
         self.title("Puzzle Solver")
         self.puzzle_config = PuzzleConfig(self)  # Create window for choosing the type of puzzle
 
-    def grid_layout_done_button_clicked(self):
+    def grid_layout_done_button_clicked(self) -> None:
         # Clicked when the user has decided what sort of sudoku puzzle they would like to solve
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             # Get the chosen grid size (string) and convert to an int
@@ -55,7 +59,7 @@ class App(tk.Tk):  # Main app class
             App.show_solve_options(self)  # Show the options for solving the puzzle
             self.puzzle_config.options_frame.grid_remove()  # Hide the sudoku type selection UI
 
-    def show_solve_options(self):
+    def show_solve_options(self) -> None:
         # Show options for which cells to solve, and solve/clear buttons
         # Create and display the UI for the different solving options (solve all/solve random cell/solve specific cell
         # /check progress)
@@ -66,7 +70,7 @@ class App(tk.Tk):  # Main app class
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=1, row=0, padx=(0, 20))
 
-    def solve_button_clicked(self):
+    def solve_button_clicked(self) -> None:
         # Solve the sudoku puzzle
         if self.misc_solve_options.cell_option.get() == ("specific" or "check_progress"):
             # Create window to specify cells to solve (cell_option = specific) or mark which cells are worked out by
@@ -75,11 +79,11 @@ class App(tk.Tk):  # Main app class
         else:
             solve.solve_sudoku(self)
 
-    def clear_button_clicked(self):
+    def clear_button_clicked(self) -> None:
         # Clear user-entered numbers on the sudoku grid
         misc_funcs.clear_button_clicked_func(self)
 
-    def ks_done_button_clicked(self):
+    def ks_done_button_clicked(self) -> None:
         # Button for where the user has finished typing a cage's total has been clicked
         all_selected, valid_total = ks_cages_setup.ks_total_clicked(self)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
@@ -99,7 +103,7 @@ class App(tk.Tk):  # Main app class
 
 
 class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting grid size for standard sudoku
-    def __init__(self, container):
+    def __init__(self, container: App) -> None:
         self.grid_dim = None  # Size of grid as length of a side, e.g. a 9x9 grid has grid_dim = 9
         self.container = container
         self.puzzle_type = tk.StringVar()
@@ -145,8 +149,8 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
                                             command=container.grid_layout_done_button_clicked)
         grid_layout_done_button.grid(row=2, column=0, sticky="W", padx=5, pady=5)
 
-    def sudoku_rb_clicked(self):
+    def sudoku_rb_clicked(self) -> None:
         self.grid_size_frame.grid(row=1, sticky="W", pady=5)  # Show the grid size dropdown menu
 
-    def other_rb_clicked(self):
+    def other_rb_clicked(self) -> None:
         self.grid_size_frame.grid_remove()  # Hide the grid size dropdown menu
