@@ -1,18 +1,20 @@
 from abc import ABC
 from tkinter.messagebox import showerror, showinfo
 from pysat.solvers import Glucose3
+import tkinter as tk
 import random
 import clause_creation
 import misc_funcs
+import initial_setup
 
 
 class SatSolver(Glucose3, ABC):
     # SAT solver class
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
 
-def solve_sudoku(root):
+def solve_sudoku(root: initial_setup.App) -> None:
 
     cell_option = root.misc_solve_options.cell_option.get()
     cell_texts = root.puzzle_grid.cell_texts
@@ -38,7 +40,7 @@ def solve_sudoku(root):
         sat_solver.delete()
 
 
-def get_input(cell_texts, grid_dim):
+def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list[str]]]:
     # Retrieves an input from the grid, and also checks if it is a valid input or not
     puzzle = []
     row = []
@@ -62,7 +64,7 @@ def get_input(cell_texts, grid_dim):
     return is_valid, puzzle
 
 
-def decode(sat_solver, root):
+def decode(sat_solver: SatSolver, root: initial_setup.App) -> list[str]:
     # Converts the solution into values for display, and then displays them
 
     cell_option = root.misc_solve_options.cell_option.get()
@@ -111,14 +113,14 @@ def decode(sat_solver, root):
         return true_vars_decoded
 
 
-def show_answer(cell_texts, true_vars_decoded, index):
+def show_answer(cell_texts: list[tk.Text], true_vars_decoded: list[str], index: int) -> None:
     # Displays the answer in a cell text box
     cell_texts[index].insert("1.0", true_vars_decoded[index])
     cell_texts[index].tag_add("make blue", "1.0", "end")
     cell_texts[index].tag_config("make blue", foreground="blue")
 
 
-def check_progress(puzzle, root):
+def check_progress(puzzle: list[list[str]], root: initial_setup.App) -> None:
 
     solve_button = root.solve_clear.solve_button
     clear_button = root.solve_clear.solve_button
