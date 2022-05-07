@@ -1,11 +1,12 @@
 import tkinter as tk
 import math
 import solve
+import initial_setup
 
 
 class SolveClear:
     # Solve and clear buttons
-    def __init__(self, root, container):
+    def __init__(self, root: initial_setup.App, container: tk.Frame) -> None:
         # container: where the frame is contained, root: app
         self.buttons_frame = tk.Frame(container)
         self.solve_button = tk.Button(self.buttons_frame, text="Solve", font=20, command=root.solve_button_clicked)
@@ -18,7 +19,7 @@ class SolveClear:
 
 class MiscOptions:
     # Options for which cells to solve: all, random, specific, check progress
-    def __init__(self, container):
+    def __init__(self, container: tk.Frame) -> None:
         self.cell_option = tk.StringVar()  # The chosen option
 
         self.misc_options_frame = tk.Frame(container, borderwidth=5, relief="groove")
@@ -43,7 +44,7 @@ class MiscOptions:
 class ChooseCellsWindow(tk.Toplevel):
     # Window to choose cell(s) to solve (specific), or to mark which cells were worked out by the user and which cells
     # are puzzle clues.
-    def __init__(self, root):
+    def __init__(self, root: initial_setup.App) -> None:
         super().__init__()
 
         self.option = root.misc_solve_options.cell_option  # One of "all", "random", "specific", "check_progress"
@@ -129,7 +130,7 @@ class ChooseCellsWindow(tk.Toplevel):
                     self.grid_buttons[i]["state"] = "disabled"
                     self.display_answer[i] = True
 
-    def grid_button_clicked(self, i):
+    def grid_button_clicked(self, i: int) -> None:
         # Grid button i is clicked
         if self.option == "specific":
             if self.grid_buttons[i]["bg"] == "white":  # Mark cells that aren't going to be solved as to be solved
@@ -146,7 +147,7 @@ class ChooseCellsWindow(tk.Toplevel):
                 self.grid_buttons[i]["bg"] = "black"
                 self.display_answer[i] = True
 
-    def done_button_clicked(self, root):
+    def done_button_clicked(self, root: initial_setup.App) -> None:
         solve.solve_sudoku(root)
         # Close window once finished
         self.destroy()
