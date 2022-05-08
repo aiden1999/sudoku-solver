@@ -9,16 +9,17 @@ if TYPE_CHECKING:
 
 
 class SudokuGrid(tk.Canvas):
-    """
+    """The grid of a standard sudoku puzzle.
+
     Attributes:
-        cell_texts (list[tk.Text]):
-        display_answer (list[bool]):
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
     def __init__(self, container: App, grid_size: int) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         if grid_size == 25:
             cell_width = 36
@@ -73,16 +74,17 @@ class SudokuGrid(tk.Canvas):
 
 
 class KillerSudokuGrid(tk.Canvas):
-    """
+    """The grid of a killer sudoku puzzle.
+
     Attributes:
-        cell_texts (list[tk.Text]):
-        display_answer (list[bool]):
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where number will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         self["width"] = 500
         self["height"] = 500
@@ -134,16 +136,17 @@ class KillerSudokuGrid(tk.Canvas):
 
 
 class HyperSudokuGrid(tk.Canvas):
-    """
+    """ The grid of a hyper sudoku puzzle.
+
     Attributes:
-        cell_texts (list[tk.Text]):
-        display_answer (list[bool]):
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         self["width"] = 500
         self["height"] = 500
@@ -188,11 +191,12 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
-    """
+    """ The grid of a greater than sudoku puzzle.
+
     Attributes:
-        cell_texts (list[tk.Text]):
-        display_answer (list[bool]):
-        horizontal_buttons (list[tk.Button]):
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where number will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
+        horizontal_buttons (list[tk.Button]): Buttons that are on
         horizontal_greater (list[str]):
         vertical_buttons (list[tk.Button]):
         vertical_greater (list[str]):
