@@ -35,13 +35,16 @@ class App(tk.Tk):
         solve_clear (SolveClear): Contains a frame with the 'solve' and 'clear' buttons.
 
     Methods
-        clear_button_clicked: Clear numbers from the puzzle grid.
+        clear_button_clicked: Clears numbers from the puzzle grid.
         grid_layout_done_button_clicked: What happens after the user has decided which type of sudoku puzzle to solve.
             Initiates the next steps in creating the sudoku puzzle grid for the user to fill in.
-        ks_done_button_clicked:
-        reset_cell_text
-        show_solve_options
-        solve_button_clicked
+        ks_done_button_clicked: Button has been clicked once the user has finished defining a killer sudoku cage (and
+            has put the total down), so either let the user start defining the next box or creates the killer
+            sudoku grid.
+        reset_cell_text: Resets all the text boxes (in the puzzle grid cells) to their original state, i.e. there is no
+            text in them anymore, and the text colour is set to black.
+        show_solve_options: Shows options for which cells to solve, and solve/clear buttons.
+        solve_button_clicked: Solves the sudoku puzzle.
     """
     def __init__(self) -> None:
         super().__init__()
@@ -90,11 +93,7 @@ class App(tk.Tk):
             self.puzzle_config.options_frame.grid_remove()  # Hide the sudoku type selection UI
 
     def show_solve_options(self) -> None:
-        # Show options for which cells to solve, and solve/clear buttons
-        # Create and display the UI for the different solving options (solve all/solve random cell/solve specific cell
-        # /check progress)
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
-        # Create and display the UI for the solve/clear buttons
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=1, row=0, padx=(0, 20))
 
@@ -114,11 +113,8 @@ class App(tk.Tk):
         self.solve_clear.clear_button["state"] = "disabled"
 
     def reset_cell_text(self) -> None:
-        # Resets all parameter text boxes to their original state
-
         grid_dim = self.puzzle_config.grid_dim
         cell_texts = self.puzzle_grid.cell_texts
-
         for i in range(grid_dim ** 2):
             cell_texts[i].configure(state="normal")
             cell_texts[i].tag_add("make black", "1.0", "end")
@@ -126,7 +122,6 @@ class App(tk.Tk):
             cell_texts[i].delete("1.0")
 
     def ks_done_button_clicked(self) -> None:
-        # Button for where the user has finished typing a cage's total has been clicked
         all_selected, valid_total = ks_total_clicked(self)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
             # Create and display the killer sudoku grid.
@@ -144,13 +139,31 @@ class App(tk.Tk):
                 self.killer_sudoku_cage_def.add_total_button["state"] = "disabled"
 
 
-class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting grid size for standard sudoku
+class PuzzleConfig:
+    """ UI where the user chooses what type of sudoku puzzle to solve, and in the case of standard sudoku, selecting
+    the grid size.
+
+    Attributes:
+        container (App): Where the UI is all contained.
+        current_size (tk.StringVar): Size of the standard sudoku (if chosen). Used with the grid size combobox.
+        grid_dim (int): Size of grid as length of a side, e.g. a 9x9 grid has grid_dim = 9. Initialises as a None type.
+        grid_size_combobox (tkk.Combobox): Combobox (dropdown menu) to choose the size of grid - for standard
+            sudoku only.
+        grid_size_frame (tk.Frame): Frame used to contain grid size combobox and relevant label.
+        options_frame (tk.Frame): Contains the frame for the puzzle type radio buttons and the frame for the grid size
+            combobox.
+        puzzle_type (tk.StringVar):
+
+    Methods:
+        other_rb_clicked: Hides the grid size combobox if a radiobutton for a puzzle type that is not standard sudoku
+            is clicked.
+        sudoku_rb_clicked: Show the grid size combobox if the standard sudoku radiobutton is clicked.
+    """
     def __init__(self, container: App) -> None:
-        self.grid_dim = None  # Size of grid as length of a side, e.g. a 9x9 grid has grid_dim = 9
+        self.grid_dim = None
         self.container = container
         self.puzzle_type = tk.StringVar()
 
-        # Grid options: shows on launch
         self.options_frame = tk.Frame(container, borderwidth=5, relief="groove")
         self.options_frame.grid(column=1, row=0, padx=20, pady=10)
 
@@ -168,10 +181,9 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
         hyper_sudoku_rb = tk.Radiobutton(puzzle_type_rb_frame, text="Hyper Sudoku", value="hyper_sudoku",
                                          variable=self.puzzle_type, font=20, command=self.other_rb_clicked)
         hyper_sudoku_rb.grid(row=3, sticky="W")
-        greater_than_sudoku_rb = tk.Radiobutton(puzzle_type_rb_frame, text="Greater Than Sudoku",
-                                                value="greater_than_sudoku", variable=self.puzzle_type, font=20,
-                                                command=self.other_rb_clicked)
-        greater_than_sudoku_rb.grid(row=4, sticky="W")
+        gt_sudoku_rb = tk.Radiobutton(puzzle_type_rb_frame, text="Greater Than Sudoku", value="greater_than_sudoku",
+                                      variable=self.puzzle_type, font=20, command=self.other_rb_clicked)
+        gt_sudoku_rb.grid(row=4, sticky="W")
         self.puzzle_type.set("sudoku")
 
         # Choosing the size of the grid - dropdown menu for standard sudoku only
@@ -180,9 +192,8 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
         grid_size_label = tk.Label(self.grid_size_frame, text="Choose a grid size:", font=20)
         grid_size_label.grid(column=0, row=0, )
         self.current_size = tk.StringVar()
-        self.grid_size_combobox = ttk.Combobox(self.grid_size_frame, textvariable=self.current_size)
-        self.grid_size_combobox["values"] = ("4 x 4", "6 x 6", "9 x 9", "16 x 16", "25 x 25")
-        self.grid_size_combobox["state"] = "readonly"
+        self.grid_size_combobox = ttk.Combobox(self.grid_size_frame, textvariable=self.current_size, state="readonly",
+                                               values=["4 x 4", "6 x 6", "9 x 9", "16 x 16", "25 x 25"])
         self.grid_size_combobox.set("9 x 9")
         self.grid_size_combobox.grid(column=1, row=0, padx=5)
 
@@ -192,7 +203,7 @@ class PuzzleConfig:  # Choose what type of sudoku puzzle to solve, and selecting
         grid_layout_done_button.grid(row=2, column=0, sticky="W", padx=5, pady=5)
 
     def sudoku_rb_clicked(self) -> None:
-        self.grid_size_frame.grid(row=1, sticky="W", pady=5)  # Show the grid size dropdown menu
+        self.grid_size_frame.grid(row=1, sticky="W", pady=5)
 
     def other_rb_clicked(self) -> None:
-        self.grid_size_frame.grid_remove()  # Hide the grid size dropdown menu
+        self.grid_size_frame.grid_remove()
