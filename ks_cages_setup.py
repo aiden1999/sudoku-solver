@@ -1,11 +1,15 @@
+from __future__ import annotations
+from random import choice
 import tkinter as tk
-import random
 from tkinter import messagebox
-import misc_funcs
+from typing import TYPE_CHECKING
+from misc_funcs import i_to_rc
+if TYPE_CHECKING:
+    from initial_setup import App
 
 
 class KillerSudokuCageDef(tk.Toplevel):
-    def __init__(self, root):
+    def __init__(self, root: App) -> None:
         super().__init__()
 
         self.ks_count = 0  # Number of cells that are currently in the current cage
@@ -60,7 +64,7 @@ class KillerSudokuCageDef(tk.Toplevel):
                                           command=root.ks_done_button_clicked)
         self.add_total_button.pack(padx=10, pady=10)
 
-    def grid_button_clicked(self, i):
+    def grid_button_clicked(self, i: int) -> None:
         # Button in grid clicked
         self.ks_count = ks_grid_button_clicked(i, self.grid_buttons, self.ks_count)
         if self.ks_count == 9:  # Warn the user that they have reached the maximum cage size
@@ -80,7 +84,7 @@ class KillerSudokuCageDef(tk.Toplevel):
         else:
             self.cage_done_button["state"] = "disabled"
 
-    def cage_done_button_clicked(self):
+    def cage_done_button_clicked(self) -> None:
         # Cells that are in a cage have been defined
         for i in range(81):
             self.grid_buttons[i]["state"] = "disabled"
@@ -92,18 +96,19 @@ class KillerSudokuCageDef(tk.Toplevel):
         self.cage_done_button["state"] = "disabled"
 
 
-def ks_grid_button_clicked(i, grid_buttons, ks_count):
+def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int) -> int:
     # Toggles grid buttons between selected and not selected
+    count = ks_count
     if grid_buttons[i]["bg"] == "white":  # Mark cell as part of a cage
         grid_buttons[i]["bg"] = "blue"
-        ks_count = ks_count + 1
+        count = count + 1
     elif grid_buttons[i]["bg"] == "blue":
         grid_buttons[i]["bg"] = "white"
-        ks_count = ks_count - 1
-    return ks_count  # Returns the number of cells that are in the current cage
+        count = count - 1
+    return count  # Returns the number of cells that are in the current cage
 
 
-def ks_total_clicked(root):
+def ks_total_clicked(root: App) -> tuple[bool, bool]:
 
     grid_buttons = root.killer_sudoku_cage_def.grid_buttons
     ks_cages = root.ks_cages
@@ -139,7 +144,7 @@ def ks_total_clicked(root):
             return False, True
 
 
-def generate_ks_colours(cages):
+def generate_ks_colours(cages: list[list[int]]) -> list[str]:
     # Assign colours to the cages such that adjacent cages are not the same colour
     possible_colours = ["light blue", "pink", "pale green", "light goldenrod", "tomato", "sienna1", "orchid1"]
     chosen_colours = []
@@ -149,8 +154,7 @@ def generate_ks_colours(cages):
         cage_adj_colours = []
         colour_choice = None
         for cell in cage:  # Determine adjacent colours
-            cell_row = misc_funcs.i_to_rc(cell, 9)[0]
-            cell_col = misc_funcs.i_to_rc(cell, 9)[1]
+            cell_row, cell_col = i_to_rc(cell, 9)
             if cell == 0:  # Top left corner
                 cage_adj_colours.append(chosen_colours[1])
                 cage_adj_colours.append(chosen_colours[9])
@@ -202,7 +206,7 @@ def generate_ks_colours(cages):
                 cage_adj_colours.append(chosen_colours[cell + 10])
         valid_colour = False
         while not valid_colour:
-            colour_choice = random.choice(possible_colours)
+            colour_choice = choice(possible_colours)
             valid_colour = True
             for colour in cage_adj_colours:
                 if colour == colour_choice:
@@ -213,7 +217,7 @@ def generate_ks_colours(cages):
     return chosen_colours
 
 
-def cage_max_total(cage_size):
+def cage_max_total(cage_size: int) -> int:
     max_total = 0
     for i in range(cage_size):
         max_total = max_total + (9 - i)

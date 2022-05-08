@@ -1,40 +1,20 @@
-def clear_button_clicked_func(root):
-
-    solve_button = root.misc_solve_options.solve_button
-    clear_button = root.misc_solve_options.clear_button
-
-    reset_cell_text(root)
-    solve_button["state"] = "normal"
-    clear_button["state"] = "disabled"
+import tkinter as tk
 
 
-def i_to_rc(i, grid_dim):
+def i_to_rc(i: int, grid_dim: int) -> tuple[int, int]:
     # Converts the number of a cell to row and column coordinates
     row_coordinate = i // grid_dim
     column_coordinate = i - (grid_dim * row_coordinate)
     return row_coordinate, column_coordinate
 
 
-def disable_cell_text(cell_texts, grid_dim):
+def disable_cell_text(cell_texts: list[tk.Text], grid_dim: int) -> None:
     # Disables all parameter text boxes
     for i in range(grid_dim ** 2):
         cell_texts[i].configure(state="disabled")
 
 
-def reset_cell_text(root):
-    # Resets all parameter text boxes to their original state
-
-    grid_dim = root.puzzle_config.grid_dim
-    cell_texts = root.puzzle_grid.cell_texts
-
-    for i in range(grid_dim ** 2):
-        cell_texts[i].configure(state="normal")
-        cell_texts[i].tag_add("make black", "1.0", "end")
-        cell_texts[i].tag_config("make black", foreground="black")
-        cell_texts[i].delete("1.0")
-
-
-def size_str_to_int(number_string):
+def size_str_to_int(number_string: str) -> int:
     if number_string == "4 x 4":
         return 4
     if number_string == "6 x 6":

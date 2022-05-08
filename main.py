@@ -1,5 +1,5 @@
-import initial_setup
+from initial_setup import App
 
 if __name__ == "__main__":
-    app = initial_setup.App()
+    app = App()
     app.mainloop()

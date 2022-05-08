@@ -1,8 +1,13 @@
-import math
-import misc_funcs
+from __future__ import annotations
+from math import sqrt
+from typing import TYPE_CHECKING
+from misc_funcs import i_to_rc
+if TYPE_CHECKING:
+    from initial_setup import App
+    from solve import SatSolver
 
 
-def define_clauses(puzzle, sat_solver, root):
+def define_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) -> None:
 
     sudoku_type = root.puzzle_config.puzzle_type.get()
     grid_dim = root.puzzle_config.grid_dim
@@ -14,10 +19,10 @@ def define_clauses(puzzle, sat_solver, root):
     if sudoku_type == "hyper_sudoku":
         define_hyper_sudoku_clauses(puzzle, sat_solver)
     if sudoku_type == "greater_than_sudoku":
-        define_greater_than_sudoku_clauses(puzzle, sat_solver, root)
+        define_gt_sudoku_clauses(puzzle, sat_solver, root)
 
 
-def define_standard_clauses(puzzle, sat_solver, grid_dim):
+def define_standard_clauses(puzzle: list[list[str]], sat_solver: SatSolver, grid_dim: int) -> None:
     # Creates clauses for standard Sudoku rules
 
     # Clauses for known values in the puzzle
@@ -50,13 +55,13 @@ def define_standard_clauses(puzzle, sat_solver, grid_dim):
             for c in range(0, grid_dim, 3):
                 blocks_rule(sat_solver, c, r, grid_dim)
     else:
-        sr_dim = int(math.sqrt(grid_dim))
+        sr_dim = int(sqrt(grid_dim))
         for r in range(0, grid_dim, sr_dim):
             for c in range(0, grid_dim, sr_dim):
                 blocks_rule(sat_solver, c, r, grid_dim)
 
 
-def blocks_rule(sat_solver, start_col, start_row, grid_dim):
+def blocks_rule(sat_solver: SatSolver, start_col: int, start_row: int, grid_dim: int) -> None:
     # Creates clauses to check that every number occurs at most once per block, for a specific block
     if grid_dim == 6:
         for n in range(1, 7):
@@ -67,7 +72,7 @@ def blocks_rule(sat_solver, start_col, start_row, grid_dim):
                             if col_row_mod(c, r, grid_dim) < col_row_mod(c_prime, r_prime, grid_dim):
                                 sat_solver.add_clause(two_neg_clauses(n, c, r, n, c_prime, r_prime, grid_dim))
     else:
-        sr_dim = int(math.sqrt(grid_dim))
+        sr_dim = int(sqrt(grid_dim))
         for n in range(1, grid_dim + 1):
             for r in range(start_row, start_row + sr_dim):
                 for c in range(start_col, start_col + sr_dim):
@@ -77,17 +82,17 @@ def blocks_rule(sat_solver, start_col, start_row, grid_dim):
                                 sat_solver.add_clause(two_neg_clauses(n, c, r, n, c_prime, r_prime, grid_dim))
 
 
-def two_neg_clauses(n1, c1, r1, n2, c2, r2, grid_dim):
+def two_neg_clauses(n1: int, c1: int, r1: int, n2: int, c2: int, r2: int, grid_dim: int) -> list[int]:
     # Returns two negation clauses, to be added to the DIMACS file
     return [- ncr_to_var(n1, c1, r1, grid_dim), - ncr_to_var(n2, c2, r2, grid_dim)]
 
 
-def ncr_to_var(number, column, row, grid_dim):
+def ncr_to_var(number: int, column: int, row: int, grid_dim: int) -> int:
     # Converts a combination of a number, a column and a row to a unique identifier
     return int(number + (grid_dim * column) + ((grid_dim ** 2) * row))
 
 
-def col_row_mod(column, row, grid_dim):
+def col_row_mod(column: int, row: int, grid_dim: int) -> int:
     # Numbers a cell within a block, based on column and row. E.g. for a 3x3 block, would return
     # 0 | 1 | 2
     # 3 | 4 | 5
@@ -96,11 +101,11 @@ def col_row_mod(column, row, grid_dim):
     if grid_dim == 6:
         return (column % 3) + 3 * (row % 2)
     else:
-        sr_dim = int(math.sqrt(grid_dim))
+        sr_dim = int(sqrt(grid_dim))
         return (column % sr_dim) + sr_dim * (row % sr_dim)
 
 
-def define_killer_sudoku_clauses(puzzle, sat_solver, root):
+def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) -> None:
 
     cages = root.ks_cages
     totals = root.ks_totals
@@ -173,8 +178,7 @@ def define_killer_sudoku_clauses(puzzle, sat_solver, root):
             encoded_permutation = []
             for j in range(number_of_cells):
                 current_cell = cages[i][j]
-                current_row = misc_funcs.i_to_rc(current_cell, 9)[0]
-                current_column = misc_funcs.i_to_rc(current_cell, 9)[1]
+                current_row, current_column = i_to_rc(current_cell, 9)
                 current_number = permutation[j]
                 encoded_permutation.append(ncr_to_var(current_number, current_column, current_row, 9))
             encoded_permutations.append(encoded_permutation)
@@ -184,7 +188,7 @@ def define_killer_sudoku_clauses(puzzle, sat_solver, root):
     define_standard_clauses(puzzle, sat_solver, 9)
 
 
-def define_hyper_sudoku_clauses(puzzle, sat_solver):
+def define_hyper_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver) -> None:
     blocks_rule(sat_solver, 1, 1, 9)  # Top left
     blocks_rule(sat_solver, 1, 5, 9)  # Bottom left
     blocks_rule(sat_solver, 5, 1, 9)  # Top right
@@ -192,7 +196,7 @@ def define_hyper_sudoku_clauses(puzzle, sat_solver):
     define_standard_clauses(puzzle, sat_solver, 9)
 
 
-def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
+def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) -> None:
 
     horizontal_greater = root.puzzle_grid.horizontal_greater
     vertical_greater = root.puzzle_grid.vertical_greater
@@ -289,57 +293,45 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
                 greater_than_count = greater_than_count + 1
             if vertical_greater[down_i] == "up":
                 greater_than_count = greater_than_count + 1
-        i_row, i_col = misc_funcs.i_to_rc(i, 9)
-        encoded_nums = [0]
+        i_row, i_col = i_to_rc(i, 9)
+        en = [0]  # Encoded numbers
         for j in range(1, 10):
-            encoded_nums.append(ncr_to_var(j, i_col, i_row, 9))
+            en.append(ncr_to_var(j, i_col, i_row, 9))
         if edges_count == 2:
             if greater_than_count == 2:
-                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
-                                       encoded_nums[5], encoded_nums[4], encoded_nums[3]])
+                sat_solver.add_clause([en[9], en[8], en[7], en[6], en[5], en[4], en[3]])
             elif greater_than_count == 1:
-                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
-                                       encoded_nums[4], encoded_nums[3], encoded_nums[2]])
+                sat_solver.add_clause([en[8], en[7], en[6], en[5], en[4], en[3], en[2]])
             else:
-                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
-                                       encoded_nums[3], encoded_nums[2], encoded_nums[1]])
+                sat_solver.add_clause([en[7], en[6], en[5], en[4], en[3], en[2], en[1]])
         elif edges_count == 3:
             if greater_than_count == 3:
-                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
-                                       encoded_nums[5], encoded_nums[4]])
+                sat_solver.add_clause([en[9], en[8], en[7], en[6], en[5], en[4]])
             elif greater_than_count == 2:
-                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
-                                       encoded_nums[4], encoded_nums[3]])
+                sat_solver.add_clause([en[8], en[7], en[6], en[5], en[4], en[3]])
             elif greater_than_count == 1:
-                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
-                                       encoded_nums[3], encoded_nums[2]])
+                sat_solver.add_clause([en[7], en[6], en[5], en[4], en[3], en[2]])
             else:
-                sat_solver.add_clause([encoded_nums[6], encoded_nums[5], encoded_nums[4], encoded_nums[3],
-                                       encoded_nums[2], encoded_nums[1]])
+                sat_solver.add_clause([en[6], en[5], en[4], en[3], en[2], en[1]])
         else:
             if greater_than_count == 4:
-                sat_solver.add_clause([encoded_nums[9], encoded_nums[8], encoded_nums[7], encoded_nums[6],
-                                       encoded_nums[5]])
+                sat_solver.add_clause([en[9], en[8], en[7], en[6], en[5]])
             elif greater_than_count == 3:
-                sat_solver.add_clause([encoded_nums[8], encoded_nums[7], encoded_nums[6], encoded_nums[5],
-                                       encoded_nums[4]])
+                sat_solver.add_clause([en[8], en[7], en[6], en[5], en[4]])
             elif greater_than_count == 2:
-                sat_solver.add_clause([encoded_nums[7], encoded_nums[6], encoded_nums[5], encoded_nums[4],
-                                       encoded_nums[3]])
+                sat_solver.add_clause([en[7], en[6], en[5], en[4], en[3]])
             elif greater_than_count == 1:
-                sat_solver.add_clause([encoded_nums[6], encoded_nums[5], encoded_nums[4], encoded_nums[3],
-                                       encoded_nums[2]])
+                sat_solver.add_clause([en[6], en[5], en[4], en[3], en[2]])
             else:
-                sat_solver.add_clause([encoded_nums[5], encoded_nums[4], encoded_nums[3], encoded_nums[2],
-                                       encoded_nums[1]])
+                sat_solver.add_clause([en[5], en[4], en[3], en[2], en[1]])
     x_var = 730
     for i in range(len(horizontal_greater)):
         left_cell = i + (i // 2)  # location of cell to the left of the inequality sign (0 to 79)
         right_cell = left_cell + 1  # location of cell to the right of the inequality sign (1 to 80)
         left_cell_encoded = [0]
         right_cell_encoded = [0]
-        left_r, left_c = misc_funcs.i_to_rc(left_cell, 9)
-        right_r, right_c = misc_funcs.i_to_rc(right_cell, 9)
+        left_r, left_c = i_to_rc(left_cell, 9)
+        right_r, right_c = i_to_rc(right_cell, 9)
         for j in range(1, 10):
             left_cell_encoded.append(ncr_to_var(j, left_c, left_r, 9))
             right_cell_encoded.append(ncr_to_var(j, right_c, right_r, 9))
@@ -357,8 +349,8 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
         down_cell = up_cell + 9
         up_cell_encoded = [0]
         down_cell_encoded = [0]
-        up_r, up_c = misc_funcs.i_to_rc(up_cell, 9)
-        down_r, down_c = misc_funcs.i_to_rc(down_cell, 9)
+        up_r, up_c = i_to_rc(up_cell, 9)
+        down_r, down_c = i_to_rc(down_cell, 9)
         for j in range(1, 10):
             up_cell_encoded.append(ncr_to_var(j, up_c, up_r, 9))
             down_cell_encoded.append(ncr_to_var(j, down_c, down_r, 9))
@@ -375,13 +367,13 @@ def define_greater_than_sudoku_clauses(puzzle, sat_solver, root):
     define_standard_clauses(puzzle, sat_solver, 9)
 
 
-def dnf_to_cnf(dnf_clause, x_var, sat_solver):
+def dnf_to_cnf(dnf_clause: list[list[int]], x_var: int, sat_solver: SatSolver) -> int:
     x_var_new = x_var
     for sub_clause in dnf_clause:
         temp_clause = [x_var_new]
         for num in sub_clause:
             temp_clause.append(- num)
-        sat_solver.append(temp_clause)
+        sat_solver.add_clause(temp_clause)
         for num in sub_clause:
             temp_clause = [- x_var_new, num]
             sat_solver.add_clause(temp_clause)

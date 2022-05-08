@@ -1,18 +1,23 @@
+from __future__ import annotations
 from abc import ABC
-from tkinter.messagebox import showerror, showinfo
 from pysat.solvers import Glucose3
-import random
-import clause_creation
-import misc_funcs
+from random import randint
+import tkinter as tk
+from tkinter.messagebox import showerror, showinfo
+from typing import TYPE_CHECKING
+from clause_creation import define_clauses
+from misc_funcs import disable_cell_text, i_to_rc
+if TYPE_CHECKING:
+    from initial_setup import App
 
 
 class SatSolver(Glucose3, ABC):
     # SAT solver class
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
 
-def solve_sudoku(root):
+def solve_sudoku(root: App) -> None:
 
     cell_option = root.misc_solve_options.cell_option.get()
     cell_texts = root.puzzle_grid.cell_texts
@@ -21,24 +26,22 @@ def solve_sudoku(root):
     grid_dim = root.puzzle_config.grid_dim
 
     is_valid, puzzle = get_input(cell_texts, grid_dim)  # Bool, is user input valid; Puzzle input as a list of lists
-    if (cell_option == "all") or (cell_option == "random"):
-        display_answer = 0  # display_answer isn't needed MIGHT BE ABLE TO GET RID OF THIS
     if is_valid and (cell_option == "check_progress"):
         check_progress(puzzle, root)
     elif is_valid:
         sat_solver = SatSolver()
-        clause_creation.define_clauses(puzzle, sat_solver, root)
+        define_clauses(puzzle, sat_solver, root)
         if sat_solver.solve():  # There exists a solution
             decode(sat_solver, root)
         else:
             showerror(title="Error", message="No solution found.")
-        misc_funcs.disable_cell_text(cell_texts, grid_dim)
+        disable_cell_text(cell_texts, grid_dim)
         solve_button["state"] = "disabled"
         clear_button["state"] = "normal"
         sat_solver.delete()
 
 
-def get_input(cell_texts, grid_dim):
+def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list[str]]]:
     # Retrieves an input from the grid, and also checks if it is a valid input or not
     puzzle = []
     row = []
@@ -62,7 +65,7 @@ def get_input(cell_texts, grid_dim):
     return is_valid, puzzle
 
 
-def decode(sat_solver, root):
+def decode(sat_solver: SatSolver, root: App) -> list[str]:
     # Converts the solution into values for display, and then displays them
 
     cell_option = root.misc_solve_options.cell_option.get()
@@ -96,7 +99,7 @@ def decode(sat_solver, root):
         random_cell = None
         while not empty_cell:
             # Generate random cell
-            random_cell = random.randint(0, (grid_dim ** 2) - 1)
+            random_cell = randint(0, (grid_dim ** 2) - 1)
             if cell_texts[random_cell].get("1.0") == "\n":
                 empty_cell = True
         show_answer(cell_texts, true_vars_decoded, random_cell)
@@ -111,14 +114,14 @@ def decode(sat_solver, root):
         return true_vars_decoded
 
 
-def show_answer(cell_texts, true_vars_decoded, index):
+def show_answer(cell_texts: list[tk.Text], true_vars_decoded: list[str], index: int) -> None:
     # Displays the answer in a cell text box
     cell_texts[index].insert("1.0", true_vars_decoded[index])
     cell_texts[index].tag_add("make blue", "1.0", "end")
     cell_texts[index].tag_config("make blue", foreground="blue")
 
 
-def check_progress(puzzle, root):
+def check_progress(puzzle: list[list[str]], root: App) -> None:
 
     solve_button = root.solve_clear.solve_button
     clear_button = root.solve_clear.solve_button
@@ -127,10 +130,10 @@ def check_progress(puzzle, root):
     display_answer = root.puzzle_grid.display_answer
 
     sat_solver = SatSolver()
-    clause_creation.define_clauses(puzzle, sat_solver, root)
+    define_clauses(puzzle, sat_solver, root)
     if sat_solver.solve():  # The puzzle can be solved with the user's answers, ie the puzzle is correct so far
         showinfo("Congratulations", "Your progress is correct so far.")
-        misc_funcs.disable_cell_text(cell_texts, grid_dim)
+        disable_cell_text(cell_texts, grid_dim)
         solve_button["state"] = "disabled"
         clear_button["state"] = "normal"
 
@@ -147,19 +150,19 @@ def check_progress(puzzle, root):
                 original_puzzle.append(row)
                 row = []
         sat_solver2 = SatSolver()
-        clause_creation.define_clauses(original_puzzle, sat_solver2, root)
+        define_clauses(original_puzzle, sat_solver2, root)
         if not sat_solver2.solve():  # Original puzzle couldn't be solved
             showerror(title="Error", message="No solution found to original puzzle.")
-            misc_funcs.disable_cell_text(cell_texts, grid_dim)
+            disable_cell_text(cell_texts, grid_dim)
             solve_button["state"] = "disabled"
             clear_button["state"] = "normal"
             sat_solver2.delete()
 
         else:  # Original puzzle can be solved
-            original_puzzle_solution = decode(sat_solver2, "check_progress", cell_texts, display_answer, grid_dim)
+            original_puzzle_solution = decode(sat_solver2, root)
             incorrect_user_answers = []
             for i in range(grid_dim ** 2):
-                row, col = misc_funcs.i_to_rc(i, grid_dim)
+                row, col = i_to_rc(i, grid_dim)
                 if str(original_puzzle_solution[i]) != puzzle[row][col]:
                     # Compare user answers to solution
                     incorrect_user_answers.append(i)
@@ -167,7 +170,7 @@ def check_progress(puzzle, root):
                 cell_texts[incorrect_user_answers[i]].tag_add("make red", "1.0", "end")
                 cell_texts[incorrect_user_answers[i]].tag_config("make red", foreground="red")
             showinfo("Information", "Errors have been highlighted.")
-            misc_funcs.disable_cell_text(cell_texts, grid_dim)
+            disable_cell_text(cell_texts, grid_dim)
             solve_button["state"] = "disabled"
             clear_button["state"] = "normal"
             sat_solver2.delete()
