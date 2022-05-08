@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class App(tk.Tk):
-    """A tkinter window that contains most of the UI for the program and acts as the main backbone.
+    """ A tkinter window that contains most of the UI for the program and acts as the main backbone.
 
     Attributes
         choose_cells_window (ChooseCellsWindow): Window for marking cells when using specific cell option or check

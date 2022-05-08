@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class SolveClear:
-    # Solve and clear buttons
+    """
+    Attributes:
+        buttons_frame (tk.Frame):
+        clear_button (tk.Button):
+        solve_button (tk.Button):
+    """
     def __init__(self, root: App, container: tk.Frame) -> None:
         # container: where the frame is contained, root: app
         self.buttons_frame = tk.Frame(container)
@@ -22,7 +27,11 @@ class SolveClear:
 
 
 class MiscOptions:
-    # Options for which cells to solve: all, random, specific, check progress
+    """
+    Attributes:
+        cell_option (tk.StringVar):
+        misc_options_frame (tk.Frame):
+    """
     def __init__(self, container: tk.Frame) -> None:
         self.cell_option = tk.StringVar()  # The chosen option
 
@@ -48,6 +57,17 @@ class MiscOptions:
 class ChooseCellsWindow(tk.Toplevel):
     # Window to choose cell(s) to solve (specific), or to mark which cells were worked out by the user and which cells
     # are puzzle clues.
+    """
+    Attributes:
+        display_answer (list[bool]):
+        done_button (tk.Button):
+        grid_buttons (list[tk.Button]):
+        option (str):
+
+    Methods:
+        done_button_clicked:
+        grid_button_clicked:
+    """
     def __init__(self, root: App) -> None:
         super().__init__()
 

@@ -9,6 +9,11 @@ if TYPE_CHECKING:
 
 
 class SudokuGrid(tk.Canvas):
+    """
+    Attributes:
+        cell_texts (list[tk.Text]):
+        display_answer (list[bool]):
+    """
     def __init__(self, container: App, grid_size: int) -> None:
         super().__init__(container)
 
@@ -68,6 +73,11 @@ class SudokuGrid(tk.Canvas):
 
 
 class KillerSudokuGrid(tk.Canvas):
+    """
+    Attributes:
+        cell_texts (list[tk.Text]):
+        display_answer (list[bool]):
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
@@ -124,6 +134,11 @@ class KillerSudokuGrid(tk.Canvas):
 
 
 class HyperSudokuGrid(tk.Canvas):
+    """
+    Attributes:
+        cell_texts (list[tk.Text]):
+        display_answer (list[bool]):
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
@@ -173,6 +188,19 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
+    """
+    Attributes:
+        cell_texts (list[tk.Text]):
+        display_answer (list[bool]):
+        horizontal_buttons (list[tk.Button]):
+        horizontal_greater (list[str]):
+        vertical_buttons (list[tk.Button]):
+        vertical_greater (list[str]):
+
+    Methods:
+        horizontal_button_clicked:
+        vertical_button_clicked:
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 

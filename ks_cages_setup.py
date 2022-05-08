@@ -9,6 +9,19 @@ if TYPE_CHECKING:
 
 
 class KillerSudokuCageDef(tk.Toplevel):
+    """
+    Attributes:
+        add_total_button (tk.Button):
+        cage_done_button (tk.Button):
+        grid_buttons (list[tk.Button]):
+        instructions_2_label (tk.Label):
+        ks_count (int):
+        total_text (tk.Text):
+
+    Methods:
+        cage_done_button_clicked
+        grid_button_clicked
+    """
     def __init__(self, root: App) -> None:
         super().__init__()
 
