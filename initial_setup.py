@@ -1,14 +1,17 @@
 """ Contains the App class and the PuzzleConfig class. The App class contains all the many of the UI elements as
     attributes. The PuzzleConfig class """
 
-
+from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
-import misc_funcs
-import ks_cages_setup
-import puzzle_grids
-import solve_options
-import solve
+from typing import TYPE_CHECKING
+from ks_cages_setup import ks_total_clicked
+from misc_funcs import size_str_to_int
+from puzzle_grids import GreaterThanSudokuGrid, HyperSudokuGrid, KillerSudokuGrid, SudokuGrid
+from solve import solve_sudoku
+from solve_options import ChooseCellsWindow, MiscOptions, SolveClear
+if TYPE_CHECKING:
+    from ks_cages_setup import KillerSudokuCageDef
 
 
 class App(tk.Tk):  # Main app class
@@ -32,21 +35,21 @@ class App(tk.Tk):  # Main app class
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             # Get the chosen grid size (string) and convert to an int
             current_size_txt = self.puzzle_config.grid_size_combobox.get()
-            self.puzzle_config.grid_dim = misc_funcs.size_str_to_int(current_size_txt)
+            self.puzzle_config.grid_dim = size_str_to_int(current_size_txt)
             # Create and display the sudoku grid
-            self.puzzle_grid = puzzle_grids.SudokuGrid(self, self.puzzle_config.grid_dim)
+            self.puzzle_grid = SudokuGrid(self, self.puzzle_config.grid_dim)
             self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)  # Show the options for solving the puzzle
             self.puzzle_config.options_frame.grid_remove()  # Hide the sudoku type selection UI
 
         if self.puzzle_config.puzzle_type.get() == "killer_sudoku":
             # Open a window to define where killer sudoku cages are and their totals
-            self.killer_sudoku_cage_def = ks_cages_setup.KillerSudokuCageDef(self)
+            self.killer_sudoku_cage_def = KillerSudokuCageDef(self)
 
         if self.puzzle_config.puzzle_type.get() == "hyper_sudoku":
             self.puzzle_config.grid_dim = 9
             # Create and display the hyper sudoku grid
-            self.puzzle_grid = puzzle_grids.HyperSudokuGrid(self)
+            self.puzzle_grid = HyperSudokuGrid(self)
             self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)  # Show the options for solving the puzzle
             self.puzzle_config.options_frame.grid_remove()  # Hide the sudoku type selection UI
@@ -54,7 +57,7 @@ class App(tk.Tk):  # Main app class
         if self.puzzle_config.puzzle_type.get() == "greater_than_sudoku":
             self.puzzle_config.grid_dim = 9
             # Create and display the greater than sudoku grid
-            self.puzzle_grid = puzzle_grids.GreaterThanSudokuGrid(self)
+            self.puzzle_grid = GreaterThanSudokuGrid(self)
             self.puzzle_grid.grid(column=0, row=0)
             App.show_solve_options(self)  # Show the options for solving the puzzle
             self.puzzle_config.options_frame.grid_remove()  # Hide the sudoku type selection UI
@@ -63,32 +66,47 @@ class App(tk.Tk):  # Main app class
         # Show options for which cells to solve, and solve/clear buttons
         # Create and display the UI for the different solving options (solve all/solve random cell/solve specific cell
         # /check progress)
-        self.misc_solve_options = solve_options.MiscOptions(self.options_frame)
+        self.misc_solve_options = MiscOptions(self.options_frame)
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
         # Create and display the UI for the solve/clear buttons
-        self.solve_clear = solve_options.SolveClear(self, self.options_frame)
+        self.solve_clear = SolveClear(self, self.options_frame)
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=1, row=0, padx=(0, 20))
 
     def solve_button_clicked(self) -> None:
         # Solve the sudoku puzzle
-        if self.misc_solve_options.cell_option.get() == ("specific" or "check_progress"):
+        if (self.misc_solve_options.cell_option.get() == "specific") or \
+                (self.misc_solve_options.cell_option.get() == "check_progress"):
             # Create window to specify cells to solve (cell_option = specific) or mark which cells are worked out by
             # the user.
-            self.choose_cells_window = solve_options.ChooseCellsWindow(self)
+            self.choose_cells_window = ChooseCellsWindow(self)
         else:
-            solve.solve_sudoku(self)
+            solve_sudoku(self)
 
     def clear_button_clicked(self) -> None:
         # Clear user-entered numbers on the sudoku grid
-        misc_funcs.clear_button_clicked_func(self)
+        self.reset_cell_text()
+        self.solve_clear.solve_button["state"] = "normal"
+        self.solve_clear.clear_button["state"] = "disabled"
+
+    def reset_cell_text(self) -> None:
+        # Resets all parameter text boxes to their original state
+
+        grid_dim = self.puzzle_config.grid_dim
+        cell_texts = self.puzzle_grid.cell_texts
+
+        for i in range(grid_dim ** 2):
+            cell_texts[i].configure(state="normal")
+            cell_texts[i].tag_add("make black", "1.0", "end")
+            cell_texts[i].tag_config("make black", foreground="black")
+            cell_texts[i].delete("1.0")
 
     def ks_done_button_clicked(self) -> None:
         # Button for where the user has finished typing a cage's total has been clicked
-        all_selected, valid_total = ks_cages_setup.ks_total_clicked(self)
+        all_selected, valid_total = ks_total_clicked(self)
         if all_selected:  # Every cell is in one cage, stop assigning cells to cages, so puzzle grid can be drawn
             # Create and display the killer sudoku grid.
-            self.puzzle_grid = puzzle_grids.KillerSudokuGrid(self)
+            self.puzzle_grid = KillerSudokuGrid(self)
             self.puzzle_grid.grid(column=0, row=0)
             self.show_solve_options()
             self.puzzle_config.options_frame.grid_remove()

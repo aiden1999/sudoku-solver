@@ -1,12 +1,16 @@
+from __future__ import annotations
+from math import sqrt
 import tkinter as tk
-import math
-import solve
-import initial_setup
+from typing import TYPE_CHECKING
+from solve import solve_sudoku
+
+if TYPE_CHECKING:
+    from initial_setup import App
 
 
 class SolveClear:
     # Solve and clear buttons
-    def __init__(self, root: initial_setup.App, container: tk.Frame) -> None:
+    def __init__(self, root: App, container: tk.Frame) -> None:
         # container: where the frame is contained, root: app
         self.buttons_frame = tk.Frame(container)
         self.solve_button = tk.Button(self.buttons_frame, text="Solve", font=20, command=root.solve_button_clicked)
@@ -26,28 +30,28 @@ class MiscOptions:
         cell_option_label = tk.Label(self.misc_options_frame, text="Select cells to solve:", font=20)
         cell_option_label.grid(row=0, sticky="W")
 
-        all_radiobutton = tk.Radiobutton(self.misc_options_frame, text="All cells", value="all",
-                                         variable=self.cell_option, font=20)
-        all_radiobutton.grid(row=1, sticky="W")
-        random_radiobutton = tk.Radiobutton(self.misc_options_frame, text="Random cell", value="random",
-                                            variable=self.cell_option, font=20)
-        random_radiobutton.grid(row=2, sticky="W")
-        specific_radiobutton = tk.Radiobutton(self.misc_options_frame, text="Specific cell(s)", value="specific",
-                                              variable=self.cell_option, font=20)
-        specific_radiobutton.grid(row=3, sticky="W")
-        check_progress_radiobutton = tk.Radiobutton(self.misc_options_frame, text="Check progress",
-                                                    value="check_progress", variable=self.cell_option, font=20)
-        check_progress_radiobutton.grid(row=4, sticky="W")
+        all_rb = tk.Radiobutton(self.misc_options_frame, text="All cells", value="all", variable=self.cell_option,
+                                font=20)
+        all_rb.grid(row=1, sticky="W")
+        random_rb = tk.Radiobutton(self.misc_options_frame, text="Random cell", value="random", font=20,
+                                   variable=self.cell_option)
+        random_rb.grid(row=2, sticky="W")
+        specific_rb = tk.Radiobutton(self.misc_options_frame, text="Specific cell(s)", value="specific", font=20,
+                                     variable=self.cell_option)
+        specific_rb.grid(row=3, sticky="W")
+        check_progress_rb = tk.Radiobutton(self.misc_options_frame, text="Check progress", value="check_progress",
+                                           variable=self.cell_option, font=20)
+        check_progress_rb.grid(row=4, sticky="W")
         self.cell_option.set("all")
 
 
 class ChooseCellsWindow(tk.Toplevel):
     # Window to choose cell(s) to solve (specific), or to mark which cells were worked out by the user and which cells
     # are puzzle clues.
-    def __init__(self, root: initial_setup.App) -> None:
+    def __init__(self, root: App) -> None:
         super().__init__()
 
-        self.option = root.misc_solve_options.cell_option  # One of "all", "random", "specific", "check_progress"
+        self.option = root.misc_solve_options.cell_option.get()  # One of "all", "random", "specific", "check_progress"
         self.display_answer = root.puzzle_grid.display_answer  # List of bools
         cell_texts = root.puzzle_grid.cell_texts  # Text boxes where values are entered onto the grid
         grid_dim = root.puzzle_config.grid_dim  # Size of grid (one side)
@@ -89,7 +93,7 @@ class ChooseCellsWindow(tk.Toplevel):
                 if i % 6 == 2:
                     cell_frames[i].grid(padx=(0, 15))
         else:
-            gd_sqrt = int(math.sqrt(grid_dim))
+            gd_sqrt = int(sqrt(grid_dim))
             for j in range(grid_dim):
                 for i in range(grid_dim):
                     i_diff = i // gd_sqrt
@@ -106,7 +110,7 @@ class ChooseCellsWindow(tk.Toplevel):
                         cell_frames[i].grid(padx=(0, 15))
 
         grid_frame.pack(padx=10, pady=10)
-        self.done_button = tk.Button(self, font=20, text="Done", command=self.done_button_clicked)
+        self.done_button = tk.Button(self, font=20, text="Done", command=lambda x=root: self.done_button_clicked(x))
         self.done_button.pack(padx=10, pady=10)
 
         if self.option == "check_progress":
@@ -147,7 +151,7 @@ class ChooseCellsWindow(tk.Toplevel):
                 self.grid_buttons[i]["bg"] = "black"
                 self.display_answer[i] = True
 
-    def done_button_clicked(self, root: initial_setup.App) -> None:
-        solve.solve_sudoku(root)
+    def done_button_clicked(self, root: App) -> None:
+        solve_sudoku(root)
         # Close window once finished
         self.destroy()

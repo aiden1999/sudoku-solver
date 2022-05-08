@@ -1,12 +1,15 @@
+from __future__ import annotations
+from random import choice
 import tkinter as tk
-import random
 from tkinter import messagebox
-import misc_funcs
-import initial_setup
+from typing import TYPE_CHECKING
+from misc_funcs import i_to_rc
+if TYPE_CHECKING:
+    from initial_setup import App
 
 
 class KillerSudokuCageDef(tk.Toplevel):
-    def __init__(self, root: initial_setup.App) -> None:
+    def __init__(self, root: App) -> None:
         super().__init__()
 
         self.ks_count = 0  # Number of cells that are currently in the current cage
@@ -105,7 +108,7 @@ def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int)
     return count  # Returns the number of cells that are in the current cage
 
 
-def ks_total_clicked(root: initial_setup.App) -> tuple[bool, bool]:
+def ks_total_clicked(root: App) -> tuple[bool, bool]:
 
     grid_buttons = root.killer_sudoku_cage_def.grid_buttons
     ks_cages = root.ks_cages
@@ -151,8 +154,7 @@ def generate_ks_colours(cages: list[list[int]]) -> list[str]:
         cage_adj_colours = []
         colour_choice = None
         for cell in cage:  # Determine adjacent colours
-            cell_row = misc_funcs.i_to_rc(cell, 9)[0]
-            cell_col = misc_funcs.i_to_rc(cell, 9)[1]
+            cell_row, cell_col = i_to_rc(cell, 9)
             if cell == 0:  # Top left corner
                 cage_adj_colours.append(chosen_colours[1])
                 cage_adj_colours.append(chosen_colours[9])
@@ -204,7 +206,7 @@ def generate_ks_colours(cages: list[list[int]]) -> list[str]:
                 cage_adj_colours.append(chosen_colours[cell + 10])
         valid_colour = False
         while not valid_colour:
-            colour_choice = random.choice(possible_colours)
+            colour_choice = choice(possible_colours)
             valid_colour = True
             for colour in cage_adj_colours:
                 if colour == colour_choice:

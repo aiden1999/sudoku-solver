@@ -1,12 +1,15 @@
+from __future__ import annotations
 import tkinter as tk
-import math
-import ks_cages_setup
-import misc_funcs
-import initial_setup
+from math import sqrt
+from typing import TYPE_CHECKING
+from ks_cages_setup import generate_ks_colours
+from misc_funcs import i_to_rc
+if TYPE_CHECKING:
+    from initial_setup import App
 
 
 class SudokuGrid(tk.Canvas):
-    def __init__(self, container: initial_setup.App, grid_size: int) -> None:
+    def __init__(self, container: App, grid_size: int) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -29,9 +32,9 @@ class SudokuGrid(tk.Canvas):
             bold_lines.append(self.create_line(25, 125, 325, 125, width=8))
             bold_lines.append(self.create_line(25, 225, 325, 225, width=8))
         else:
-            bold_start = int(25 + (cell_width * math.sqrt(grid_size)))
-            bold_stop = int(26 + (cell_width * (grid_size - math.sqrt(grid_size))))
-            bold_step = int(cell_width * math.sqrt(grid_size))
+            bold_start = int(25 + (cell_width * sqrt(grid_size)))
+            bold_stop = int(26 + (cell_width * (grid_size - sqrt(grid_size))))
+            bold_step = int(cell_width * sqrt(grid_size))
             for i in range(bold_start, bold_stop, bold_step):
                 bold_lines.append(self.create_line(i, c1, i, c2, width=8))
                 bold_lines.append(self.create_line(c1, i, c2, i, width=8))
@@ -65,7 +68,7 @@ class SudokuGrid(tk.Canvas):
 
 
 class KillerSudokuGrid(tk.Canvas):
-    def __init__(self, container: initial_setup.App) -> None:
+    def __init__(self, container: App) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -74,9 +77,9 @@ class KillerSudokuGrid(tk.Canvas):
         self["width"] = 500
         self["height"] = 500
         # Colouring cell backgrounds for different killer sudoku cages
-        cell_colours = ks_cages_setup.generate_ks_colours(container.ks_cages)
+        cell_colours = generate_ks_colours(container.ks_cages)
         for i in range(81):
-            cell_row, cell_column = misc_funcs.i_to_rc(i, 9)
+            cell_row, cell_column = i_to_rc(i, 9)
             row_1 = 25 + (cell_row * 50)
             row_2 = 75 + (cell_row * 50)
             col_1 = 25 + (cell_column * 50)
@@ -106,8 +109,8 @@ class KillerSudokuGrid(tk.Canvas):
         ks_totals_windows = []
         for i in range(len(container.ks_cages)):
             top_left_cell = min(container.ks_cages[i])
-            tl_cell_row = misc_funcs.i_to_rc(top_left_cell, 9)[0]
-            tl_cell_col = misc_funcs.i_to_rc(top_left_cell, 9)[1]
+            tl_cell_row = i_to_rc(top_left_cell, 9)[0]
+            tl_cell_col = i_to_rc(top_left_cell, 9)[1]
             ks_totals_labels.append(tk.Label(self, height=1, font=("Arial", 8), bd=0, text=container.ks_totals[i],
                                              bg=cell_colours[top_left_cell]))
             ks_totals_windows.append(self.create_window(38 + (tl_cell_col * 50), 38 + (tl_cell_row * 50)))
@@ -121,7 +124,7 @@ class KillerSudokuGrid(tk.Canvas):
 
 
 class HyperSudokuGrid(tk.Canvas):
-    def __init__(self, container: initial_setup.App) -> None:
+    def __init__(self, container: App) -> None:
         super().__init__(container)
 
         self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
@@ -170,7 +173,7 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
-    def __init__(self, container: initial_setup.App) -> None:
+    def __init__(self, container: App) -> None:
         super().__init__(container)
 
         self.horizontal_buttons = []  # Buttons on greater than sudoku grid
