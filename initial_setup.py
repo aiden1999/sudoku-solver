@@ -1,6 +1,3 @@
-""" Contains the App class and the PuzzleConfig class. The App class contains all the many of the UI elements as
-    attributes. The PuzzleConfig class """
-
 from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
@@ -14,24 +11,54 @@ if TYPE_CHECKING:
     from ks_cages_setup import KillerSudokuCageDef
 
 
-class App(tk.Tk):  # Main app class
+class App(tk.Tk):
+    """A tkinter window that contains most of the UI for the program and acts as the main backbone.
+
+    Attributes
+        choose_cells_window (ChooseCellsWindow): Window for marking cells when using specific cell option or check
+            progress option. Has None type initially as it is not created unless it is needed.
+        killer_sudoku_cage_def (KillerSudokuCageDef): A window where the cages of a killer sudoku puzzle are defined.
+            Has None type initially as the window is not created until the user has chosen to solve a killer sudoku
+            puzzle.
+        ks_cages (list[list[int]]): A list of lists (each list represents a cage) of ints (each int represents a cell
+            in said cage). Initially an empty list.
+        ks_totals (list[int]): A list of ints. ks_totals[i] is the total of the cage in ks_cages[i].
+        misc_solve_options (MiscOptions): A set of tkinter radio buttons that allow the user to choose whether they
+            want to be shown the entire solution, a random cell, specific cell(s) of their choosing, or to check their
+            current progress.
+        options_frame (tk.Frame): Contains the solving options radio buttons, and the 'solve' and 'clear' buttons.
+        puzzle_config (PuzzleConfig): Contains the UI for choosing the type of puzzle to solve. The first thing the
+            user would see.
+        puzzle_grid (GreaterThanSudokuGrid, HyperSudokuGrid, KillerSudokuGrid, or SudokuGrid): The actual sudoku puzzle
+            grid. Has None type when initially created, as the user would have not yet decided which type of sudoku
+            puzzle they are solving.
+        solve_clear (SolveClear): Contains a frame with the 'solve' and 'clear' buttons.
+
+    Methods
+        clear_button_clicked: Clear numbers from the puzzle grid.
+        grid_layout_done_button_clicked: What happens after the user has decided which type of sudoku puzzle to solve.
+            Initiates the next steps in creating the sudoku puzzle grid for the user to fill in.
+        ks_done_button_clicked:
+        reset_cell_text
+        show_solve_options
+        solve_button_clicked
+    """
     def __init__(self) -> None:
         super().__init__()
 
-        self.puzzle_grid = None  # The sudoku puzzle grid
-        self.misc_solve_options = None  # Frame containing random, specific cell, check progress etc.
-        self.killer_sudoku_cage_def = None  # Window where the cages of a killer sudoku puzzle are defined
-        self.choose_cells_window = None  # Window for choosing cells when using specific cell option or check progress
-        self.solve_clear = None  # Frame containing solve and clear buttons
-        self.options_frame = tk.Frame()  # Frame containing options (random etc.) and solve/clear buttons
-        self.ks_cages = []  # List of lists (cages) of ints (cells)
-        self.ks_totals = []  # List of ints, ks_totals[i] corresponds to ks_cages[i]
-
-        self.title("Puzzle Solver")
+        self.puzzle_grid = None
+        self.options_frame = tk.Frame()
+        self.misc_solve_options = MiscOptions(self.options_frame)
+        self.solve_clear = SolveClear(self, self.options_frame)
+        self.killer_sudoku_cage_def = None
+        self.choose_cells_window = None
+        self.ks_cages = []
+        self.ks_totals = []
         self.puzzle_config = PuzzleConfig(self)  # Create window for choosing the type of puzzle
 
+        self.title("Puzzle Solver")
+
     def grid_layout_done_button_clicked(self) -> None:
-        # Clicked when the user has decided what sort of sudoku puzzle they would like to solve
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             # Get the chosen grid size (string) and convert to an int
             current_size_txt = self.puzzle_config.grid_size_combobox.get()
@@ -66,10 +93,8 @@ class App(tk.Tk):  # Main app class
         # Show options for which cells to solve, and solve/clear buttons
         # Create and display the UI for the different solving options (solve all/solve random cell/solve specific cell
         # /check progress)
-        self.misc_solve_options = MiscOptions(self.options_frame)
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
         # Create and display the UI for the solve/clear buttons
-        self.solve_clear = SolveClear(self, self.options_frame)
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=1, row=0, padx=(0, 20))
 
@@ -84,7 +109,6 @@ class App(tk.Tk):  # Main app class
             solve_sudoku(self)
 
     def clear_button_clicked(self) -> None:
-        # Clear user-entered numbers on the sudoku grid
         self.reset_cell_text()
         self.solve_clear.solve_button["state"] = "normal"
         self.solve_clear.clear_button["state"] = "disabled"
