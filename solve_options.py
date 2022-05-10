@@ -13,8 +13,8 @@ class SolveClear:
 
     Attributes:
         buttons_frame (tk.Frame): A frame containing the buttons.
-        clear_button (tk.Button): 
-        solve_button (tk.Button):
+        clear_button (tk.Button): A button to clear numbers from the sudoku grid once it has been solved.
+        solve_button (tk.Button): Solve button to solve the puzzle.
     """
     def __init__(self, root: App, container: tk.Frame) -> None:
         # container: where the frame is contained, root: app
@@ -28,13 +28,15 @@ class SolveClear:
 
 
 class MiscOptions:
-    """
+    """This contains the solving options - solve all cells, solve a random cell, solve specified cells, check the user's
+    current progress.
+
     Attributes:
-        cell_option (tk.StringVar):
-        misc_options_frame (tk.Frame):
+        cell_option (tk.StringVar): The chosen option of the four radio buttons.
+        misc_options_frame (tk.Frame): The frame that contains the radio buttons and instructions.
     """
     def __init__(self, container: tk.Frame) -> None:
-        self.cell_option = tk.StringVar()  # The chosen option
+        self.cell_option = tk.StringVar()
 
         self.misc_options_frame = tk.Frame(container, borderwidth=5, relief="groove")
         cell_option_label = tk.Label(self.misc_options_frame, text="Select cells to solve:", font=20)
@@ -56,28 +58,34 @@ class MiscOptions:
 
 
 class ChooseCellsWindow(tk.Toplevel):
-    # Window to choose cell(s) to solve (specific), or to mark which cells were worked out by the user and which cells
-    # are puzzle clues.
-    """
+    """ Window to choose cell(s) to solve (specific cell option), or to mark which cells were worked out by the user
+    and which cells are puzzle clues (check progress cell option).
+
     Attributes:
-        display_answer (list[bool]):
-        done_button (tk.Button):
-        grid_buttons (list[tk.Button]):
-        option (str):
+        display_answer (list[bool]): One boolean for each cell, true/false depending on if the answer to that cell
+            will be shown when the puzzle is all solved, or not.
+        done_button (tk.Button): Button clicked by the user when they are finished selecting cells.
+        grid_buttons (list[tk.Button]): List of buttons arranged in a grid, to represent the puzzle grid.
+        option (str): The cell option the user chose. In this instance, would either be "specific" or "check_progress".
 
     Methods:
-        done_button_clicked:
-        grid_button_clicked:
+        done_button_clicked: The window is closed and the sudoku is solved.
+        grid_button_clicked: Button[i] colour and display_answer[i] are changed. If option is "specific", then colours
+            switch from white (cells whose solution isn't going to be shown) to blue (cells whose solution is going
+            to be shown), and vice versa. display_answer[i] is changed from False to True (and vice versa).
+            If option is "check progress", then colours switch from black (cell answer is part of the original puzzle)
+            to blue (cell answer has been worked out by the user), and vice versa. display_answer[i] is change from
+            False to True.
     """
     def __init__(self, root: App) -> None:
         super().__init__()
 
-        self.option = root.misc_solve_options.cell_option.get()  # One of "all", "random", "specific", "check_progress"
-        self.display_answer = root.puzzle_grid.display_answer  # List of bools
+        self.option = root.misc_solve_options.cell_option.get()
+        self.display_answer = root.puzzle_grid.display_answer
         cell_texts = root.puzzle_grid.cell_texts  # Text boxes where values are entered onto the grid
         grid_dim = root.puzzle_config.grid_dim  # Size of grid (one side)
 
-        self.grid_buttons = []  # List of buttons
+        self.grid_buttons = []
 
         instructions_label = tk.Message(self, font=20)
         instructions_label.pack(pady=10, padx=10)
