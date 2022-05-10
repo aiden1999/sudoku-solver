@@ -9,10 +9,11 @@ if TYPE_CHECKING:
 
 
 class SolveClear:
-    """
+    """This contains the 'solve' and 'clear' buttons.
+
     Attributes:
-        buttons_frame (tk.Frame):
-        clear_button (tk.Button):
+        buttons_frame (tk.Frame): A frame containing the buttons.
+        clear_button (tk.Button): 
         solve_button (tk.Button):
     """
     def __init__(self, root: App, container: tk.Frame) -> None:
