@@ -9,11 +9,17 @@ if TYPE_CHECKING:
 
 
 class SudokuGrid(tk.Canvas):
+    """The grid of a standard sudoku puzzle.
+
+    Attributes:
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
+    """
     def __init__(self, container: App, grid_size: int) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         if grid_size == 25:
             cell_width = 36
@@ -68,11 +74,17 @@ class SudokuGrid(tk.Canvas):
 
 
 class KillerSudokuGrid(tk.Canvas):
+    """The grid of a killer sudoku puzzle.
+
+    Attributes:
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where number will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         self["width"] = 500
         self["height"] = 500
@@ -124,11 +136,17 @@ class KillerSudokuGrid(tk.Canvas):
 
 
 class HyperSudokuGrid(tk.Canvas):
+    """ The grid of a hyper sudoku puzzle.
+
+    Attributes:
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 
-        self.cell_texts = []  # List of tkinter text widgets, ie the number in each cell
-        self.display_answer = []  # List of boolean, marking whether a cell's answer will be displayed or not
+        self.cell_texts = []
+        self.display_answer = []
 
         self["width"] = 500
         self["height"] = 500
@@ -173,6 +191,26 @@ class HyperSudokuGrid(tk.Canvas):
 
 
 class GreaterThanSudokuGrid(tk.Canvas):
+    """ The grid of a greater than sudoku puzzle.
+
+    Attributes:
+        cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where number will be entered.
+        display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
+        horizontal_buttons (list[tk.Button]): Buttons that are on a vertical edge between two cells, i.e. they have one
+            cell to the left and another to the right. Used to swap the inequality symbol between > and <.
+        horizontal_greater (list[str]): Each string is either "left" or "right", depending on which cell's value is
+            greater. horizontal_greater[i] corresponds to the button at horizontal_buttons[i].
+        vertical_buttons (list[tk.Button]): Buttons that are on a horizontal edge between two cells, i.e. they have one
+            cell above and another below. Used to swap the inequality symbol between v and ^.
+        vertical_greater (list[str]): Each string is either "up" or "down", depending on which cell's value is greater.
+            vertical_greater[i] corresponds to the button at vertical_buttons[i].
+
+    Methods:
+        horizontal_button_clicked: Changes the text on a horizontal_buttons button from > to < (or vice versa) and
+            horizontal_greater string from "left" to "right" (or vice versa).
+        vertical_button_clicked: Changes the text on a vertical_buttons button from ^  to v (or vice versa) and
+            vertical_greater string from "down" to "up" (or vice versa).
+    """
     def __init__(self, container: App) -> None:
         super().__init__(container)
 

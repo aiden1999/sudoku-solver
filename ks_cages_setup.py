@@ -9,10 +9,26 @@ if TYPE_CHECKING:
 
 
 class KillerSudokuCageDef(tk.Toplevel):
+    """A window where the user the killer sudoku cages, and their totals.
+
+    Attributes:
+        add_total_button (tk.Button): Button that the user clicks when they have finished defining a cage's total.
+        cage_done_button (tk.Button): Button that the user clicks when they have finished selecting all the cells
+            that make up a cage.
+        grid_buttons (list[tk.Button]): 81 buttons that each represent a cell on the killer sudoku grid, selected by
+            the user is marking out a cell.
+        instructions_2_label (tk.Label): Label with instructions telling the user to enter the current cage's total.
+        ks_count (int): Number of cells that are currently in the current cage.
+        total_text (tk.Text): Text box where the user enters the total for the current cage.
+
+    Methods:
+        cage_done_button_clicked: Disables the grid buttons, and shows the UI for entering the cage total.
+        grid_button_clicked: Toggles a button on the grid between being selected and not.
+    """
     def __init__(self, root: App) -> None:
         super().__init__()
 
-        self.ks_count = 0  # Number of cells that are currently in the current cage
+        self.ks_count = 0
 
         grid_frame = tk.Frame(self)  # Frame that contains block_frames
         instructions_1_label = tk.Label(self, font=20, text="Select adjacent cells to form one cage")

@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 
 class SatSolver(Glucose3, ABC):
-    # SAT solver class
+    """SAT solver.
+    """
     def __init__(self) -> None:
         super().__init__()
 
