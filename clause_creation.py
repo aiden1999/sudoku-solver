@@ -8,6 +8,16 @@ if TYPE_CHECKING:
 
 
 def define_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) -> None:
+    """
+
+    Args:
+        puzzle:
+        sat_solver:
+        root:
+
+    Returns:
+
+    """
 
     sudoku_type = root.puzzle_config.puzzle_type.get()
     grid_dim = root.puzzle_config.grid_dim

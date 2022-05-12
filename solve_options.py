@@ -3,13 +3,12 @@ from math import sqrt
 import tkinter as tk
 from typing import TYPE_CHECKING
 from solve import solve_sudoku
-
 if TYPE_CHECKING:
     from initial_setup import App
 
 
 class SolveClear:
-    """This contains the 'solve' and 'clear' buttons.
+    """ This contains the 'solve' and 'clear' buttons.
 
     Attributes:
         buttons_frame (tk.Frame): A frame containing the buttons.
@@ -17,7 +16,7 @@ class SolveClear:
         solve_button (tk.Button): Solve button to solve the puzzle.
     """
     def __init__(self, root: App, container: tk.Frame) -> None:
-        # container: where the frame is contained, root: app
+        """ Initiates SolveClear. """
         self.buttons_frame = tk.Frame(container)
         self.solve_button = tk.Button(self.buttons_frame, text="Solve", font=20, command=root.solve_button_clicked)
         self.solve_button.grid(column=0, row=0, padx=5)
@@ -28,14 +27,15 @@ class SolveClear:
 
 
 class MiscOptions:
-    """This contains the solving options - solve all cells, solve a random cell, solve specified cells, check the user's
-    current progress.
+    """ This contains the solving options - solve all cells, solve a random cell, solve specified cells, check the
+    user's current progress.
 
     Attributes:
         cell_option (tk.StringVar): The chosen option of the four radio buttons.
         misc_options_frame (tk.Frame): The frame that contains the radio buttons and instructions.
     """
     def __init__(self, container: tk.Frame) -> None:
+        """ Initiates MiscOptions. """
         self.cell_option = tk.StringVar()
 
         self.misc_options_frame = tk.Frame(container, borderwidth=5, relief="groove")
@@ -70,14 +70,10 @@ class ChooseCellsWindow(tk.Toplevel):
 
     Methods:
         done_button_clicked: The window is closed and the sudoku is solved.
-        grid_button_clicked: Button[i] colour and display_answer[i] are changed. If option is "specific", then colours
-            switch from white (cells whose solution isn't going to be shown) to blue (cells whose solution is going
-            to be shown), and vice versa. display_answer[i] is changed from False to True (and vice versa).
-            If option is "check progress", then colours switch from black (cell answer is part of the original puzzle)
-            to blue (cell answer has been worked out by the user), and vice versa. display_answer[i] is change from
-            False to True.
+        grid_button_clicked: Button[i] colour and display_answer[i] are changed.
     """
     def __init__(self, root: App) -> None:
+        """ Initiates ChooseCellsWindow. """
         super().__init__()
 
         self.option = root.misc_solve_options.cell_option.get()
@@ -164,7 +160,17 @@ class ChooseCellsWindow(tk.Toplevel):
                     self.display_answer[i] = True
 
     def grid_button_clicked(self, i: int) -> None:
-        # Grid button i is clicked
+        """ Button[i] colour and display_answer[i] are changed.
+
+        If option is "specific", then colours switch from white (cells whose solution isn't going to be shown) to blue
+        (cells whose solution is going to be shown), and vice versa. display_answer[i] is changed from False to True
+        (and vice versa). If option is "check progress", then colours switch from black (cell answer is part of the
+        original puzzle) to blue (cell answer has been worked out by the user), and vice versa. display_answer[i] is
+        changed from False to True.
+
+        Args:
+            i (int): The number of a cell in the grid. Value from 0 to (grid side length)^2 - 1.
+        """
         if self.option == "specific":
             if self.grid_buttons[i]["bg"] == "white":  # Mark cells that aren't going to be solved as to be solved
                 self.grid_buttons[i]["bg"] = "blue"
@@ -181,6 +187,9 @@ class ChooseCellsWindow(tk.Toplevel):
                 self.display_answer[i] = True
 
     def done_button_clicked(self, root: App) -> None:
+        """ The window is closed and the sudoku is solved.
+        Args:
+            root (App): Contains all the information needed to solve the puzzle.
+        """
         solve_sudoku(root)
-        # Close window once finished
         self.destroy()

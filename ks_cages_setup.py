@@ -26,6 +26,7 @@ class KillerSudokuCageDef(tk.Toplevel):
         grid_button_clicked: Toggles a button on the grid between being selected and not.
     """
     def __init__(self, root: App) -> None:
+        """ Initiates KillerSudokuCageDef. """
         super().__init__()
 
         self.ks_count = 0
@@ -81,30 +82,37 @@ class KillerSudokuCageDef(tk.Toplevel):
         self.add_total_button.pack(padx=10, pady=10)
 
     def grid_button_clicked(self, i: int) -> None:
-        # Button in grid clicked
+        """ Toggles a button on the grid between being selected and not.
+
+        If the total number of selected cells is 9, the user is told that they have reached the maximum cage size, and
+        they are no longer able to click any more buttons to select cells. If a button is deselected, the total number
+        of selected cells goes down to 8, and the user is able to select a button again. The user is also able to
+        click the button to finish defining that cage, if at least one button has been selected.
+
+        Args:
+            i (int): The index of a button, has value 0 to 80 (inclusive)
+        """
         self.ks_count = ks_grid_button_clicked(i, self.grid_buttons, self.ks_count)
-        if self.ks_count == 9:  # Warn the user that they have reached the maximum cage size
+        if self.ks_count == 9:
             for j in range(81):
                 if self.grid_buttons[j]["bg"] == "white":
                     self.grid_buttons[j]["state"] = "disabled"
             messagebox.showwarning("Warning", "You have reached the maximum cage size")
             self.cage_done_button["state"] = "normal"
-        elif self.ks_count == 8:  # Enables the grid buttons if the user went down from 9 to 8
+        elif self.ks_count == 8:
             for j in range(81):
                 if self.grid_buttons[j]["bg"] == "white":
                     self.grid_buttons[j]["state"] = "normal"
             self.cage_done_button["state"] = "normal"
-        # Can only click done button if at least one cell has been selected (at least one button clicked)
         elif self.ks_count > 0:
             self.cage_done_button["state"] = "normal"
         else:
             self.cage_done_button["state"] = "disabled"
 
     def cage_done_button_clicked(self) -> None:
-        # Cells that are in a cage have been defined
+        """ Disables the grid buttons, and shows the UI for entering the cage total. """
         for i in range(81):
             self.grid_buttons[i]["state"] = "disabled"
-        # Relevant UI is now visible/usable
         self.instructions_2_label["foreground"] = "black"
         self.total_text["state"] = "normal"
         self.add_total_button["state"] = "normal"
