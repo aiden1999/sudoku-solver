@@ -206,10 +206,8 @@ class GreaterThanSudokuGrid(tk.Canvas):
             vertical_greater[i] corresponds to the button at vertical_buttons[i].
 
     Methods:
-        horizontal_button_clicked: Changes the text on a horizontal_buttons button from > to < (or vice versa) and
-            horizontal_greater string from "left" to "right" (or vice versa).
-        vertical_button_clicked: Changes the text on a vertical_buttons button from ^  to v (or vice versa) and
-            vertical_greater string from "down" to "up" (or vice versa).
+        horizontal_button_clicked: Changes the direction of the inequality symbol.
+        vertical_button_clicked: Changes the direction of the inequality symbol.
     """
     def __init__(self, container: App) -> None:
         super().__init__(container)
@@ -282,7 +280,14 @@ class GreaterThanSudokuGrid(tk.Canvas):
             self.itemconfigure(vertical_button_windows[i], window=self.vertical_buttons[i])
 
     def horizontal_button_clicked(self, i: int) -> None:
-        # Horizontal (< or >) greater than sudoku button clicked
+        """ Changes the direction of the inequality symbol.
+
+        Changes the text on a horizontal_buttons button from > to < (and vice versa) and horizontal_greater string
+        from "left" to "right" (and vice versa).
+
+        Args:
+            i (int): Index of the button, has a value from 0 to 53 (inclusive).
+        """
         if self.horizontal_buttons[i]["text"] == "":
             # The button has never been clicked
             self.horizontal_buttons[i]["text"] = ">"
@@ -295,7 +300,14 @@ class GreaterThanSudokuGrid(tk.Canvas):
             self.horizontal_greater[i] = "left"
 
     def vertical_button_clicked(self, i: int) -> None:
-        # Vertical ( ∧ or v) greater than sudoku button clicked
+        """ Changes the direction of the inequality symbol.
+
+        Changes the text on a vertical_buttons button from ^ to v (and vice versa) and vertical_greater string from
+        "down" to "up" (and vice versa).
+
+        Args:
+            i (int): Index of the button, has value from 0 to 53 (inclusive).
+        """
         if self.vertical_buttons[i]["text"] == "":
             # The button has never been clicked
             self.vertical_buttons[i]["text"] = "v"
