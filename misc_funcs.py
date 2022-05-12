@@ -2,7 +2,14 @@ import tkinter as tk
 
 
 def i_to_rc(i: int, grid_dim: int) -> tuple[int, int]:
-    # Converts the number of a cell to row and column coordinates
+    """ Converts the index of a cell to row and column coordinates.
+
+    Args:
+        i (int): The index of a cell.
+        grid_dim: Height/width of the grid. E.g. for a 9 x 9 grid, grid_dim = 9.
+
+    Returns: A pair of integers, row_coordinate and column coordinate.
+    """
     row_coordinate = i // grid_dim
     column_coordinate = i - (grid_dim * row_coordinate)
     return row_coordinate, column_coordinate
