@@ -1,3 +1,18 @@
+""" Creating the clauses for use with the SAT solver.
+
+Functions:
+    define_clauses: Defines the clauses for different sorts of sudoku puzzle.
+    define_standard_clauses: Creates clauses for standard sudoku rules.
+    blocks_rule: Creates clauses to check that every number occurs at most once per block, for a specific block.
+    two_neg_clauses: Creates two negated variables as a CNF clause.
+    ncr_to_var: Converts a combination of a number, a column and a row to a unique identifier.
+    col_row_mod: Numbers a cell from 0 to (grid_dim - 1) within a block, from left to right, up to down.
+    define_killer_sudoku_clauses: Creates clauses for a killer sudoku puzzle.
+    define_hyper_sudoku_clauses: Creates clauses for a hyper sudoku puzzle.
+    define_gt_sudoku_clauses: Creates clauses for a greater than sudoku puzzle.
+    dnf_to_cnf: Converts a DNF clause to CNF.
+"""
+
 from __future__ import annotations
 from math import sqrt
 from typing import TYPE_CHECKING
@@ -15,6 +30,7 @@ def define_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) ->
         sat_solver (SatSolver): The SAT solver.
         root (App): The app, contains some of the data needed to define clauses.
     """
+
     sudoku_type = root.puzzle_config.puzzle_type.get()
     grid_dim = root.puzzle_config.grid_dim
 
@@ -82,6 +98,7 @@ def blocks_rule(sat_solver: SatSolver, start_col: int, start_row: int, grid_dim:
         start_row (int): The row of the top left most cell in the block.
         grid_dim (int): The side length of the sudoku grid. Takes the value of 4, 6, 9, 16 or 25.
     """
+
     if grid_dim == 6:
         for n in range(1, 7):
             for r in range(start_row, start_row + 2):
@@ -115,11 +132,12 @@ def two_neg_clauses(n1: int, c1: int, r1: int, n2: int, c2: int, r2: int, grid_d
 
     Returns: Two negated variables as a list of integers, to be added to the DIMACS file.
     """
+
     return [- ncr_to_var(n1, c1, r1, grid_dim), - ncr_to_var(n2, c2, r2, grid_dim)]
 
 
 def ncr_to_var(number: int, column: int, row: int, grid_dim: int) -> int:
-    """ Converts a combination of a number, a column and a row to a unique identifier
+    """ Converts a combination of a number, a column and a row to a unique identifier.
 
     Args:
         number (int): The cell's number.
@@ -129,6 +147,7 @@ def ncr_to_var(number: int, column: int, row: int, grid_dim: int) -> int:
 
     Returns: an integer to be used as a variables in the DIMACs file.
     """
+
     return int(number + (grid_dim * column) + ((grid_dim ** 2) * row))
 
 
@@ -142,6 +161,7 @@ def col_row_mod(column: int, row: int, grid_dim: int) -> int:
 
     Returns: An integer in the range 0 to (grid_dim - 1) (inclusive).
     """
+
     if grid_dim == 6:
         return (column % 3) + 3 * (row % 2)
     else:
@@ -246,6 +266,7 @@ def define_hyper_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver) 
         puzzle (list[list[str]]): The hyper sudoku puzzle as a 2D array of strings.
         sat_solver (SatSolver): The SAT solver.
     """
+
     blocks_rule(sat_solver, 1, 1, 9)  # Top left
     blocks_rule(sat_solver, 1, 5, 9)  # Bottom left
     blocks_rule(sat_solver, 5, 1, 9)  # Top right
@@ -254,7 +275,7 @@ def define_hyper_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver) 
 
 
 def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, root: App) -> None:
-    """ Creates clauses for a hyper sudoku puzzle.
+    """ Creates clauses for a greater than sudoku puzzle.
 
     Args:
         puzzle (list[list[str]]): The greater than sudoku puzzle as a 2D array of strings.
@@ -441,6 +462,7 @@ def dnf_to_cnf(dnf_clause: list[list[int]], x_var: int, sat_solver: SatSolver) -
 
     Returns: The next variable that can be used.
     """
+
     x_var_new = x_var
     for sub_clause in dnf_clause:
         temp_clause = [x_var_new]
