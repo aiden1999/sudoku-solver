@@ -1,3 +1,13 @@
+""" Everything relating to the user selecting how much of the solution they would like, and confirmation.
+
+Classes:
+    SolveClear: This contains the 'solve' and 'clear' buttons.
+    MiscOptions: This contains the solving options - solve all cells, solve a random cell, solve specified cells, check
+        the user's current progress.
+    ChooseCellsWindow: Window to choose cell(s) to solve (specific cell option), or to mark which cells were worked out
+        by the user and which cells are puzzle clues (check progress cell option).
+"""
+
 from __future__ import annotations
 from math import sqrt
 import tkinter as tk
@@ -15,8 +25,10 @@ class SolveClear:
         clear_button (tk.Button): A button to clear numbers from the sudoku grid once it has been solved.
         solve_button (tk.Button): Solve button to solve the puzzle.
     """
+
     def __init__(self, root: App, container: tk.Frame) -> None:
         """ Initiates SolveClear. """
+
         self.buttons_frame = tk.Frame(container)
         self.solve_button = tk.Button(self.buttons_frame, text="Solve", font=20, command=root.solve_button_clicked)
         self.solve_button.grid(column=0, row=0, padx=5)
@@ -34,8 +46,10 @@ class MiscOptions:
         cell_option (tk.StringVar): The chosen option of the four radio buttons.
         misc_options_frame (tk.Frame): The frame that contains the radio buttons and instructions.
     """
+
     def __init__(self, container: tk.Frame) -> None:
         """ Initiates MiscOptions. """
+
         self.cell_option = tk.StringVar()
 
         self.misc_options_frame = tk.Frame(container, borderwidth=5, relief="groove")
@@ -72,8 +86,10 @@ class ChooseCellsWindow(tk.Toplevel):
         done_button_clicked: The window is closed and the sudoku is solved.
         grid_button_clicked: Button[i] colour and display_answer[i] are changed.
     """
+
     def __init__(self, root: App) -> None:
         """ Initiates ChooseCellsWindow. """
+
         super().__init__()
 
         self.option = root.misc_solve_options.cell_option.get()
@@ -171,6 +187,7 @@ class ChooseCellsWindow(tk.Toplevel):
         Args:
             i (int): The number of a cell in the grid. Value from 0 to (grid side length)^2 - 1.
         """
+
         if self.option == "specific":
             if self.grid_buttons[i]["bg"] == "white":  # Mark cells that aren't going to be solved as to be solved
                 self.grid_buttons[i]["bg"] = "blue"
@@ -191,5 +208,6 @@ class ChooseCellsWindow(tk.Toplevel):
         Args:
             root (App): Contains all the information needed to solve the puzzle.
         """
+
         solve_sudoku(root)
         self.destroy()
