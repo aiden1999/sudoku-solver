@@ -94,7 +94,7 @@ class ChooseCellsWindow(tk.Toplevel):
 
         self.option = root.misc_solve_options.cell_option.get()
         self.display_answer = root.puzzle_grid.display_answer
-        cell_texts = root.puzzle_grid.cell_texts  # Text boxes where values are entered onto the grid
+        cell_texts = root.puzzle_grid.cell_texts
         grid_dim = root.puzzle_config.grid_dim  # Size of grid (one side)
 
         self.grid_buttons = []
@@ -102,8 +102,8 @@ class ChooseCellsWindow(tk.Toplevel):
         instructions_label = tk.Message(self, font=20)
         instructions_label.pack(pady=10, padx=10)
 
-        grid_frame = tk.Frame(self)  # Frame that contains the grid of buttons
-        cell_frames = []  # Frames that each contain an individual button
+        grid_frame = tk.Frame(self)  # Contains the grid of buttons
+        cell_frames = []  # Each contain an individual button
 
         # Create inner_grid_frames, grid_buttons, display_answers
         for i in range(grid_dim ** 2):

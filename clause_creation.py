@@ -58,6 +58,7 @@ def define_standard_clauses(puzzle: list[list[str]], sat_solver: SatSolver, grid
         for c in range(grid_dim):
             if int(puzzle[r][c]) != 0:
                 sat_solver.add_clause([ncr_to_var(int(puzzle[r][c]), c, r, grid_dim)])
+
     # Each cell gets at least one number
     for r in range(grid_dim):
         for c in range(grid_dim):
@@ -65,18 +66,21 @@ def define_standard_clauses(puzzle: list[list[str]], sat_solver: SatSolver, grid
             for n in range(1, grid_dim + 1):
                 clause_temp.append(ncr_to_var(n, c, r, grid_dim))
             sat_solver.add_clause(clause_temp)
+
     # Every number occurs at most once per row
     for r in range(grid_dim):
         for n in range(1, grid_dim + 1):
             for c in range(grid_dim - 1):
                 for c_prime in range(c + 1, grid_dim):
                     sat_solver.add_clause(two_neg_clauses(n, c, r, n, c_prime, r, grid_dim))
+
     # Every number occurs at most one per column
     for c in range(grid_dim):
         for n in range(1, grid_dim + 1):
             for r in range(grid_dim - 1):
                 for r_prime in range(r + 1, grid_dim):
                     sat_solver.add_clause(two_neg_clauses(n, c, r, n, c, r_prime, grid_dim))
+
     # Every number occurs at most once per block
     if grid_dim == 6:
         for r in range(0, grid_dim, 2):
@@ -182,11 +186,13 @@ def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver,
     totals = root.ks_totals
 
     x_var = 730
+
     # Killer sudoku summation rules
     all_permutations = [0, 0, 0, 0, 0, 0, 0, 0, 0]
     for i in range(len(totals)):
         total = totals[i]
         number_of_cells = len(cages[i])
+
         # Generate all the permutations of length number_of_cells
         if all_permutations[number_of_cells - 1] == 0:
             ps = []
@@ -225,6 +231,7 @@ def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver,
                                                                             for n9 in range(1, 10):
                                                                                 ps.append([n1, n2, n3, n4, n5, n6, n7,
                                                                                            n8, n9])
+
             # Remove permutations with duplicate values
             permutations_no_copies = []
             for permutation in ps:
@@ -235,6 +242,7 @@ def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver,
                 if len(temp_list) == number_of_cells:
                     permutations_no_copies.append(temp_list)
             all_permutations[number_of_cells - 1] = permutations_no_copies
+
         # Remove permutations that don't sum to the correct value
         correct_permutations = []
         for permutation in all_permutations[number_of_cells - 1]:
@@ -243,6 +251,7 @@ def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver,
                 permutation_sum = permutation_sum + num
             if permutation_sum == total:
                 correct_permutations.append(permutation)
+
         # Encode number, column, row to unique variable
         encoded_permutations = []
         for permutation in correct_permutations:
@@ -253,8 +262,10 @@ def define_killer_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver,
                 current_number = permutation[j]
                 encoded_permutation.append(ncr_to_var(current_number, current_column, current_row, 9))
             encoded_permutations.append(encoded_permutation)
+
         # Convert DNF to CNF and add CNF clauses
         x_var = dnf_to_cnf(encoded_permutations, x_var, sat_solver)
+
     # Standard sudoku rules (including numbers already in puzzle)
     define_standard_clauses(puzzle, sat_solver, 9)
 
@@ -286,7 +297,9 @@ def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, roo
     horizontal_greater = root.puzzle_grid.horizontal_greater
     vertical_greater = root.puzzle_grid.vertical_greater
 
-    for i in range(81):
+    for i in range(81):  # For every cell
+
+        # Check how many cells it is greater than
         greater_than_count = 0
         if i in [0, 3, 6, 27, 30, 33, 54, 57, 60]:  # Top left corner
             edges_count = 2
@@ -378,10 +391,13 @@ def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, roo
                 greater_than_count = greater_than_count + 1
             if vertical_greater[down_i] == "up":
                 greater_than_count = greater_than_count + 1
-        i_row, i_col = i_to_rc(i, 9)
+
+        i_row, i_col = i_to_rc(i, 9)  # Cell index as a row and column
         en = [0]  # Encoded numbers
-        for j in range(1, 10):
+        for j in range(1, 10):  # Encoded numbers 1 to 9 with cell row and column
             en.append(ncr_to_var(j, i_col, i_row, 9))
+
+        # List of possibilities for each cell as CNF
         if edges_count == 2:
             if greater_than_count == 2:
                 sat_solver.add_clause([en[9], en[8], en[7], en[6], en[5], en[4], en[3]])
@@ -409,17 +425,21 @@ def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, roo
                 sat_solver.add_clause([en[6], en[5], en[4], en[3], en[2]])
             else:
                 sat_solver.add_clause([en[5], en[4], en[3], en[2], en[1]])
+
     x_var = 730
-    for i in range(len(horizontal_greater)):
-        left_cell = i + (i // 2)  # location of cell to the left of the inequality sign (0 to 79)
-        right_cell = left_cell + 1  # location of cell to the right of the inequality sign (1 to 80)
+    for i in range(len(horizontal_greater)):  # For each horizontal button
+        left_cell = i + (i // 2)  # location of cell to the left of the inequality sign
+        right_cell = left_cell + 1  # location of cell to the right of the inequality sign
+
         left_cell_encoded = [0]
         right_cell_encoded = [0]
         left_r, left_c = i_to_rc(left_cell, 9)
         right_r, right_c = i_to_rc(right_cell, 9)
-        for j in range(1, 10):
+        for j in range(1, 10):  # Encoded numbers 1 to 9 for left cell and right cell
             left_cell_encoded.append(ncr_to_var(j, left_c, left_r, 9))
             right_cell_encoded.append(ncr_to_var(j, right_c, right_r, 9))
+
+        # Create DNF clause
         dnf_clause = []
         for left_num in range(1, 10):
             for right_num in range(1, 10):
@@ -427,18 +447,23 @@ def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, roo
                     dnf_clause.append([left_cell_encoded[left_num], right_cell_encoded[right_num]])
                 if (left_num < right_num) and (horizontal_greater[i] == "right"):
                     dnf_clause.append([left_cell_encoded[left_num], right_cell_encoded[right_num]])
+
         #  Convert DNF to CNF
         x_var = dnf_to_cnf(dnf_clause, x_var, sat_solver)
-    for i in range(len(vertical_greater)):
-        up_cell = i + (9 * (i // 18))
-        down_cell = up_cell + 9
+
+    for i in range(len(vertical_greater)):  # For each vertical button
+        up_cell = i + (9 * (i // 18))  # Location of cell above the inequality sign
+        down_cell = up_cell + 9  # Location of cell below the inequality sign
+
         up_cell_encoded = [0]
         down_cell_encoded = [0]
         up_r, up_c = i_to_rc(up_cell, 9)
         down_r, down_c = i_to_rc(down_cell, 9)
-        for j in range(1, 10):
+        for j in range(1, 10):  # Encoded numbers 1 to 9 for up cell and down cell
             up_cell_encoded.append(ncr_to_var(j, up_c, up_r, 9))
             down_cell_encoded.append(ncr_to_var(j, down_c, down_r, 9))
+
+        # Create DNF clause
         dnf_clause = []
         for up_num in range(1, 10):
             for down_num in range(1, 10):
@@ -446,8 +471,10 @@ def define_gt_sudoku_clauses(puzzle: list[list[str]], sat_solver: SatSolver, roo
                     dnf_clause.append([up_cell_encoded[up_num], down_cell_encoded[down_num]])
                 if (up_num < down_num) and (vertical_greater[i] == "down"):
                     dnf_clause.append([up_cell_encoded[up_num], down_cell_encoded[down_num]])
+
         # Convert DNF to CNF
         x_var = dnf_to_cnf(dnf_clause, x_var, sat_solver)
+
     # Standard sudoku rules (including numbers already in puzzle
     define_standard_clauses(puzzle, sat_solver, 9)
 
