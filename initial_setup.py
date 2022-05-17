@@ -1,3 +1,11 @@
+""" Contains everything for setting up the puzzle grid.
+
+Classes:
+    App: A tkinter window that contains most of the UI for the program and acts as the main backbone.
+    PuzzleConfig: UI where the user chooses what type of sudoku puzzle to solve, and in the case of standard sudoku,
+        selecting the grid size.
+"""
+
 from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
@@ -43,8 +51,10 @@ class App(tk.Tk):
         show_solve_options: Shows options for which cells to solve, and solve/clear buttons.
         solve_button_clicked: Solves the sudoku puzzle.
     """
+
     def __init__(self) -> None:
         """Initiates App"""
+
         super().__init__()
 
         self.puzzle_grid = None
@@ -65,6 +75,7 @@ class App(tk.Tk):
         If the puzzle type is killer sudoku, then another window is opened where killer sudoku cages are defined.
         Otherwise, the puzzle grid is created and the relevant UI is revealed and removed.
         """
+
         if self.puzzle_config.puzzle_type.get() == "sudoku":
             current_size_txt = self.puzzle_config.grid_size_combobox.get()
             self.puzzle_config.grid_dim = size_str_to_int(current_size_txt)
@@ -92,6 +103,7 @@ class App(tk.Tk):
 
     def show_solve_options(self) -> None:
         """ Shows options for which cells to solve, and solve/clear buttons. """
+
         self.misc_solve_options.misc_options_frame.grid(column=0, row=0)
         self.solve_clear.buttons_frame.grid(column=0, row=1)
         self.options_frame.grid(column=1, row=0, padx=(0, 20))
@@ -102,6 +114,7 @@ class App(tk.Tk):
         If the solving option is specific cell(s) or check progress, then a window is created to specify cells to solve
         (cell_option = specific) or mark which cells are worked out by the user (cell_option = check_progress).
         """
+
         if (self.misc_solve_options.cell_option.get() == "specific") or \
                 (self.misc_solve_options.cell_option.get() == "check_progress"):
             self.choose_cells_window = ChooseCellsWindow(self)
@@ -113,6 +126,7 @@ class App(tk.Tk):
 
         Also, the solve button is re-enabled, and the clear button is disabled.
         """
+
         self.reset_cell_text()
         self.solve_clear.solve_button["state"] = "normal"
         self.solve_clear.clear_button["state"] = "disabled"
@@ -122,6 +136,7 @@ class App(tk.Tk):
 
         The text boxes are editable, the font colour becomes black, and the contents of the text boxes is deleted.
         """
+
         grid_dim = self.puzzle_config.grid_dim
         cell_texts = self.puzzle_grid.cell_texts
         for i in range(grid_dim ** 2):
@@ -136,6 +151,7 @@ class App(tk.Tk):
          Either every cell is in one cage, so stops assigning cells to cages, to draw the puzzle grid. Or, not every
          cell is in a cage, so 'resets' the adding total-related UI.
          """
+
         all_selected, valid_total = ks_total_clicked(self)
         if all_selected:
             self.puzzle_grid = KillerSudokuGrid(self)
@@ -172,8 +188,10 @@ class PuzzleConfig:
             is clicked.
         sudoku_rb_clicked: Show the grid size combobox if the standard sudoku radiobutton is clicked.
     """
+
     def __init__(self, container: App) -> None:
         """ Initiates PuzzleConfig. """
+
         self.grid_dim = None
         self.container = container
         self.puzzle_type = tk.StringVar()
@@ -218,8 +236,10 @@ class PuzzleConfig:
 
     def sudoku_rb_clicked(self) -> None:
         """ Show the grid size combobox is the standard sudoku radiobutton is clicked. """
+
         self.grid_size_frame.grid(row=1, sticky="W", pady=5)
 
     def other_rb_clicked(self) -> None:
         """ Hides the grid size combobox if a radiobutton for a puzzle type that is not standard sudoku is clicked. """
+
         self.grid_size_frame.grid_remove()
