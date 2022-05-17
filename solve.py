@@ -19,6 +19,11 @@ class SatSolver(Glucose3, ABC):
 
 
 def solve_sudoku(root: App) -> None:
+    """ Solves the puzzle.
+
+    Args:
+        root (App): Needed to access cell_option, cell_texts, solve_button, clear_button and grid_dim.
+    """
 
     cell_option = root.misc_solve_options.cell_option.get()
     cell_texts = root.puzzle_grid.cell_texts
@@ -43,7 +48,14 @@ def solve_sudoku(root: App) -> None:
 
 
 def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list[str]]]:
-    # Retrieves an input from the grid, and also checks if it is a valid input or not
+    """ Retrieves an input from the puzzle grid, and also checks if it is a valid input or not.
+
+    Args:
+        cell_texts (list[tk.Text]): The text boxes in the puzzle grid, contains the user's input.
+        grid_dim (int): The size of the grid.
+
+    Returns: A boolean, indicating whether the input is valid or not, and the puzzle as a 2D array of strings.
+    """
     puzzle = []
     row = []
     is_valid = True
@@ -67,8 +79,14 @@ def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list
 
 
 def decode(sat_solver: SatSolver, root: App) -> list[str]:
-    # Converts the solution into values for display, and then displays them
+    """ Converts the solution into values for display.
 
+    Args:
+        sat_solver (SatSolver): The SAT solver.
+        root (App): Needed to access cell_option, grid_dim, cell_texts and display_answer.
+
+    Returns: If the cell_option is check_progress, then returns a list of decoded values.
+    """
     cell_option = root.misc_solve_options.cell_option.get()
     grid_dim = root.puzzle_config.grid_dim
     cell_texts = root.puzzle_grid.cell_texts
@@ -116,14 +134,26 @@ def decode(sat_solver: SatSolver, root: App) -> list[str]:
 
 
 def show_answer(cell_texts: list[tk.Text], true_vars_decoded: list[str], index: int) -> None:
-    # Displays the answer in a cell text box
+    """ Displays the answer in a cell text box.
+
+    Args:
+        cell_texts (list[tk.Text]): List of text boxes on the puzzle grid.
+        true_vars_decoded (list[str]): The decoded solution as a list of strings.
+        index (int): The index of the cell.
+    """
     cell_texts[index].insert("1.0", true_vars_decoded[index])
     cell_texts[index].tag_add("make blue", "1.0", "end")
     cell_texts[index].tag_config("make blue", foreground="blue")
 
 
 def check_progress(puzzle: list[list[str]], root: App) -> None:
+    """ Checks whether the user has solved the puzzle correctly so far, and tells them if they have or not. If there
+    are mistakes, they are highlighted.
 
+    Args:
+        puzzle (list[list[str]]): The puzzle input as a 2D array of strings.
+        root (App): Needed to access solve_button, clear_button, cell_texts, grid_dim and display_answer.
+    """
     solve_button = root.solve_clear.solve_button
     clear_button = root.solve_clear.solve_button
     cell_texts = root.puzzle_grid.cell_texts

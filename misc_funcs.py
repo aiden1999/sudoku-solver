@@ -16,12 +16,24 @@ def i_to_rc(i: int, grid_dim: int) -> tuple[int, int]:
 
 
 def disable_cell_text(cell_texts: list[tk.Text], grid_dim: int) -> None:
-    # Disables all parameter text boxes
+    """ Disables a list of text boxes, so the contents of the text boxes can no longer be modified.
+
+    Args:
+        cell_texts (list[Text]): list of text boxes, one for each cell in a puzzle grid.
+        grid_dim (int): The height/width of the grid.
+    """
     for i in range(grid_dim ** 2):
         cell_texts[i].configure(state="disabled")
 
 
 def size_str_to_int(number_string: str) -> int:
+    """ Converts string representation of a grid size to a more useful integer.
+
+    Args:
+        number_string (str): The dimension of the grid.
+
+    Returns: The side of length of the grid as an int.
+    """
     if number_string == "4 x 4":
         return 4
     if number_string == "6 x 6":
