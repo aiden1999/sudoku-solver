@@ -1,3 +1,15 @@
+""" Set-up for the cages in killer sudoku puzzles.
+
+Classes:
+    KillerSudokuCageDef: A window where the user defines the killer sudoku cages, and their totals.
+
+Functions:
+    ks_grid_button_clicked: Toggles grid buttons between selected and not selected.
+    ks_total_clicked: User has entered the total and is therefore finished with defining the cage.
+    generate_ks_colours: Assigns colours to the cages such that adjacent cages are not the same colour.
+    cage_max_total: Works out the maximum total a cage can take, given the number of cells within the cage.
+"""
+
 from __future__ import annotations
 from random import choice
 import tkinter as tk
@@ -9,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class KillerSudokuCageDef(tk.Toplevel):
-    """A window where the user the killer sudoku cages, and their totals.
+    """A window where the user defines the killer sudoku cages, and their totals.
 
     Attributes:
         add_total_button (tk.Button): Button that the user clicks when they have finished defining a cage's total.
@@ -25,8 +37,10 @@ class KillerSudokuCageDef(tk.Toplevel):
         cage_done_button_clicked: Disables the grid buttons, and shows the UI for entering the cage total.
         grid_button_clicked: Toggles a button on the grid between being selected and not.
     """
+
     def __init__(self, root: App) -> None:
         """ Initiates KillerSudokuCageDef. """
+
         super().__init__()
 
         self.ks_count = 0
@@ -92,6 +106,7 @@ class KillerSudokuCageDef(tk.Toplevel):
         Args:
             i (int): The index of a button, has value 0 to 80 (inclusive)
         """
+
         self.ks_count = ks_grid_button_clicked(i, self.grid_buttons, self.ks_count)
         if self.ks_count == 9:
             for j in range(81):
@@ -111,6 +126,7 @@ class KillerSudokuCageDef(tk.Toplevel):
 
     def cage_done_button_clicked(self) -> None:
         """ Disables the grid buttons, and shows the UI for entering the cage total. """
+
         for i in range(81):
             self.grid_buttons[i]["state"] = "disabled"
         self.instructions_2_label["foreground"] = "black"
@@ -130,6 +146,7 @@ def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int)
 
     Returns: The number of cells that are in the current cage.
     """
+
     count = ks_count
     if grid_buttons[i]["bg"] == "white":  # Mark cell as part of a cage
         grid_buttons[i]["bg"] = "blue"
@@ -141,15 +158,15 @@ def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int)
 
 
 def ks_total_clicked(root: App) -> tuple[bool, bool]:
-    """ User has entered the total and is therefore finished with defining the cage
+    """ User has entered the total and is therefore finished with defining the cage.
 
     Args:
         root (App): Needed to access grid_buttons, ks_cages, total_text and ks_totals.
 
     Returns: Two bools. First one states whether all cells are in a cage. The second one checks the total for a cage is
         valid.
-
     """
+
     grid_buttons = root.killer_sudoku_cage_def.grid_buttons
     ks_cages = root.ks_cages
     total_text = root.killer_sudoku_cage_def.total_text
@@ -192,6 +209,7 @@ def generate_ks_colours(cages: list[list[int]]) -> list[str]:
     Returns: A list of strings chosen_colours. The list of cells at cages[i] has the background colour
         chosen_colours[i].
     """
+
     possible_colours = ["light blue", "pink", "pale green", "light goldenrod", "tomato", "sienna1", "orchid1"]
     chosen_colours = []
     for i in range(81):
@@ -271,6 +289,7 @@ def cage_max_total(cage_size: int) -> int:
 
     Returns: The maximum total that cage can be, as an integer.
     """
+
     max_total = 0
     for i in range(cage_size):
         max_total = max_total + (9 - i)

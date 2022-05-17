@@ -1,3 +1,12 @@
+""" Creating the different puzzle grids.
+
+Classes:
+    SudokuGrid: The grid of a standard sudoku puzzle.
+    KillerSudokuGrid: The grid of a killer sudoku puzzle.
+    HyperSudokuGrid: The grid of a hyper sudoku puzzle.
+    GreaterThanSudokuGrid: The grid of a greater than sudoku puzzle.
+"""
+
 from __future__ import annotations
 import tkinter as tk
 from math import sqrt
@@ -15,7 +24,9 @@ class SudokuGrid(tk.Canvas):
         cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
         display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
+
     def __init__(self, container: App, grid_size: int) -> None:
+        """ Initiates SudokuGrid. """
         super().__init__(container)
 
         self.cell_texts = []
@@ -80,7 +91,10 @@ class KillerSudokuGrid(tk.Canvas):
         cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where number will be entered.
         display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
+
     def __init__(self, container: App) -> None:
+        """ Initiates KillerSudokuGrid. """
+
         super().__init__(container)
 
         self.cell_texts = []
@@ -142,7 +156,10 @@ class HyperSudokuGrid(tk.Canvas):
         cell_texts (list[tk.Text]): Text boxes where one goes in each cell in the grid, where numbers will be entered.
         display_answer (list[bool]): Marks whether a cell's answer will be displayed or not.
     """
+
     def __init__(self, container: App) -> None:
+        """ Initiates HyperSudokuGrid. """
+
         super().__init__(container)
 
         self.cell_texts = []
@@ -209,7 +226,10 @@ class GreaterThanSudokuGrid(tk.Canvas):
         horizontal_button_clicked: Changes the direction of the inequality symbol.
         vertical_button_clicked: Changes the direction of the inequality symbol.
     """
+
     def __init__(self, container: App) -> None:
+        """ Initiates GreaterThanSudokuGrid. """
+
         super().__init__(container)
 
         self.horizontal_buttons = []  # Buttons on greater than sudoku grid
@@ -288,6 +308,7 @@ class GreaterThanSudokuGrid(tk.Canvas):
         Args:
             i (int): Index of the button, has a value from 0 to 53 (inclusive).
         """
+
         if self.horizontal_buttons[i]["text"] == "":
             # The button has never been clicked
             self.horizontal_buttons[i]["text"] = ">"
@@ -308,6 +329,7 @@ class GreaterThanSudokuGrid(tk.Canvas):
         Args:
             i (int): Index of the button, has value from 0 to 53 (inclusive).
         """
+
         if self.vertical_buttons[i]["text"] == "":
             # The button has never been clicked
             self.vertical_buttons[i]["text"] = "v"
