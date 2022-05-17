@@ -121,7 +121,15 @@ class KillerSudokuCageDef(tk.Toplevel):
 
 
 def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int) -> int:
-    # Toggles grid buttons between selected and not selected
+    """ Toggles grid buttons between selected and not selected.
+
+    Args:
+        i (int): The index of the button in the grid.
+        grid_buttons (list[tk.Button]): A list containing the buttons on the grid.
+        ks_count: The number of cells in the current cage.
+
+    Returns: The number of cells that are in the current cage.
+    """
     count = ks_count
     if grid_buttons[i]["bg"] == "white":  # Mark cell as part of a cage
         grid_buttons[i]["bg"] = "blue"
@@ -129,17 +137,24 @@ def ks_grid_button_clicked(i: int, grid_buttons: list[tk.Button], ks_count: int)
     elif grid_buttons[i]["bg"] == "blue":
         grid_buttons[i]["bg"] = "white"
         count = count - 1
-    return count  # Returns the number of cells that are in the current cage
+    return count
 
 
 def ks_total_clicked(root: App) -> tuple[bool, bool]:
+    """ User has entered the total and is therefore finished with defining the cage
 
+    Args:
+        root (App): Needed to access grid_buttons, ks_cages, total_text and ks_totals.
+
+    Returns: Two bools. First one states whether all cells are in a cage. The second one checks the total for a cage is
+        valid.
+
+    """
     grid_buttons = root.killer_sudoku_cage_def.grid_buttons
     ks_cages = root.ks_cages
     total_text = root.killer_sudoku_cage_def.total_text
     ks_totals = root.ks_totals
 
-    # User has entered the total and is therefore finished with defining the cage
     cage_size = 0
     for i in range(81):
         if grid_buttons[i]["bg"] == "blue":
@@ -169,7 +184,14 @@ def ks_total_clicked(root: App) -> tuple[bool, bool]:
 
 
 def generate_ks_colours(cages: list[list[int]]) -> list[str]:
-    # Assign colours to the cages such that adjacent cages are not the same colour
+    """ Assigns colours to the cages such that adjacent cages are not the same colour.
+
+    Args:
+        cages (list[list[int]]): The killer sudoku cages as a list of lists of integer - integer is the cell number.
+
+    Returns: A list of strings chosen_colours. The list of cells at cages[i] has the background colour
+        chosen_colours[i].
+    """
     possible_colours = ["light blue", "pink", "pale green", "light goldenrod", "tomato", "sienna1", "orchid1"]
     chosen_colours = []
     for i in range(81):
@@ -242,6 +264,13 @@ def generate_ks_colours(cages: list[list[int]]) -> list[str]:
 
 
 def cage_max_total(cage_size: int) -> int:
+    """ Works out the maximum total a cage can take, given the number of cells within the cage.
+
+    Args:
+        cage_size (int): The number of cells currently in a cage.
+
+    Returns: The maximum total that cage can be, as an integer.
+    """
     max_total = 0
     for i in range(cage_size):
         max_total = max_total + (9 - i)
