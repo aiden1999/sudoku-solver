@@ -79,7 +79,7 @@ def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list
     for i in range(grid_dim ** 2):
         if cell_texts[i].get("1.0", 'end - 1c') == "":
             row.append("0")  # Puts a 0 where the user hasn't entered anything
-        elif not (cell_texts[i].get("1.0", 'end - 1c')).isnumeric():  # Check that input is numeric
+        elif not (cell_texts[i].get("1.0", 'end - 1c')).isnumeric():
             showerror(title="Error", message="Only enter numbers.")
             is_valid = False
             break
@@ -90,7 +90,7 @@ def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list
         else:
             row.append(cell_texts[i].get("1.0"))
         if (i + 1) % grid_dim == 0:  # Check if on the last cell of a row
-            puzzle.append(row)  # Add row to puzzle
+            puzzle.append(row)
             row = []
     return is_valid, puzzle
 
@@ -110,7 +110,7 @@ def decode(sat_solver: SatSolver, root: App) -> list[str]:
     cell_texts = root.puzzle_grid.cell_texts
     display_answer = root.puzzle_grid.display_answer
 
-    solution = sat_solver.get_model()  # Solution provided by the SAT solver
+    solution = sat_solver.get_model()
     true_vars = []
     for i in solution:
         if i > 0:  # Only use the variables that aren't negated, i.e. the variables that are true

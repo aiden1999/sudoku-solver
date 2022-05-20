@@ -49,7 +49,6 @@ class KillerSudokuCageDef(tk.Toplevel):
         instructions_1_label = tk.Label(self, font=20, text="Select adjacent cells to form one cage")
         instructions_1_label.pack(pady=10, padx=10)
 
-        # Creating smaller frames to contain buttons
         self.grid_buttons = []
         cell_frames = []  # Frames that each contain one button
         for i in range(81):  # Put buttons into frames
@@ -77,7 +76,6 @@ class KillerSudokuCageDef(tk.Toplevel):
             if i % 9 == 5:
                 cell_frames[i].grid(padx=(0, 15))
 
-        # Placing the grid frame onto the window
         grid_frame.pack(padx=10, pady=10)
 
         # Button for when the user has finished defining which cells make up one cage

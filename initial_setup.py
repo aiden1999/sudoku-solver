@@ -199,7 +199,7 @@ class PuzzleConfig:
         self.options_frame = tk.Frame(container, borderwidth=5, relief="groove")
         self.options_frame.grid(column=1, row=0, padx=20, pady=10)
 
-        # Choosing the type of puzzle - set of radio buttons with different choices available
+        # Choosing the type of puzzle
         puzzle_type_rb_frame = tk.Frame(self.options_frame)
         puzzle_type_rb_frame.grid(row=0, sticky="W")
         puzzle_type_label = tk.Label(puzzle_type_rb_frame, text="Select a type of puzzle to solve:", font=20)
@@ -218,7 +218,7 @@ class PuzzleConfig:
         gt_sudoku_rb.grid(row=4, sticky="W")
         self.puzzle_type.set("sudoku")
 
-        # Choosing the size of the grid - dropdown menu for standard sudoku only
+        # Choosing the size of the grid
         self.grid_size_frame = tk.Frame(self.options_frame)
         self.grid_size_frame.grid(row=1, sticky="W", pady=5)
         grid_size_label = tk.Label(self.grid_size_frame, text="Choose a grid size:", font=20)
