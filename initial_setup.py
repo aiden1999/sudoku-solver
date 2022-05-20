@@ -181,7 +181,7 @@ class PuzzleConfig:
         grid_size_frame (tk.Frame): Frame used to contain grid size combobox and relevant label.
         options_frame (tk.Frame): Contains the frame for the puzzle type radio buttons and the frame for the grid size
             combobox.
-        puzzle_type (tk.StringVar):
+        puzzle_type (tk.StringVar): The type of puzzle.
 
     Methods:
         other_rb_clicked: Hides the grid size combobox if a radiobutton for a puzzle type that is not standard sudoku

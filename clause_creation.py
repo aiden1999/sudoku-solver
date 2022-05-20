@@ -145,7 +145,7 @@ def ncr_to_var(number: int, column: int, row: int, grid_dim: int) -> int:
         row (int): The cell's row.
         grid_dim (int): The side length of the sudoku grid. Takes the value of 4, 6, 9, 16 or 25.
 
-    Returns: an integer to be used as a variables in the DIMACs file.
+    Returns: an integer to be used as a variable in the DIMACs file.
     """
 
     return int(number + (grid_dim * column) + ((grid_dim ** 2) * row))

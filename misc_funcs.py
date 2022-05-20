@@ -1,3 +1,11 @@
+""" Miscellaneous functions.
+
+Functions:
+    i_to_rc: Converts the index of a cell to row and column coordinates.
+    disable_cell_text: Disables a list of text boxes, so the contents of the text boxes can no longer be modified.
+    size_str_to_int: Converts string representation of a grid size to a more useful integer.
+"""
+
 import tkinter as tk
 
 
