@@ -10,7 +10,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import ttk
 from typing import TYPE_CHECKING
-from ks_cages_setup import ks_total_clicked
+from ks_cages_setup import ks_total_clicked, KillerSudokuCageDef
 from misc_funcs import size_str_to_int
 from puzzle_grids import GreaterThanSudokuGrid, HyperSudokuGrid, KillerSudokuGrid, SudokuGrid
 from solve import solve_sudoku

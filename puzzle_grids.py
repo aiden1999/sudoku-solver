@@ -137,6 +137,7 @@ class KillerSudokuGrid(tk.Canvas):
             light_lines.append(self.create_line(c1, i, c2, i, width=4))
 
         # cell_texts text boxes
+        for i in range(81):
             self.cell_texts.append(tk.Text(self, height=1, width=1, font=("Arial", 19), relief="flat",
                                            background=cell_colours[i]))
             self.display_answer.append(False)
