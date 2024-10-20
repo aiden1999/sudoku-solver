@@ -89,7 +89,8 @@ def get_input(cell_texts: list[tk.Text], grid_dim: int) -> tuple[bool, list[list
             break
         else:
             row.append(cell_texts[i].get("1.0"))
-        if (i + 1) % grid_dim == 0:  # Check if on the last cell of a row
+        # Check if on the last cell of a row
+        if (i + 1) % grid_dim == 0: 
             puzzle.append(row)
             row = []
     return is_valid, puzzle
