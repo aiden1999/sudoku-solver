@@ -1,4 +1,4 @@
-""" Set-up for the cages in killer sudoku puzzles.
+""" Set-up for the cages in Killer Sudoku puzzles.
 
 Classes:
     KillerSudokuCageDef: A window where the user defines the killer sudoku cages, and their totals.
@@ -65,6 +65,7 @@ class KillerSudokuCageDef(tk.Toplevel):
                 i_diff = i // 3
                 j_diff = j // 3
                 cell_frames[i + (j * 9)].grid(row=(j + j_diff), column=(i + i_diff))
+        
         # Add space between blocks
         for i in range(18, 27):
             cell_frames[i].grid(pady=(0, 15))
