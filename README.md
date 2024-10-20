@@ -1,4 +1,4 @@
-# SudokuSolver
+# Sudoku Solver
 
 ## Features
 
