@@ -195,6 +195,7 @@ class ChooseCellsWindow(tk.Toplevel):
             elif self.grid_buttons[i]["bg"] == "blue":  # Reverse of above
                 self.grid_buttons[i]["bg"] = "white"
                 self.display_answer[i] = False
+        
         if self.option == "check_progress":
             if self.grid_buttons[i]["bg"] == "black":  # Mark original answer as user answer
                 self.grid_buttons[i]["bg"] = "blue"
